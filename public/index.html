@@ -3572,10 +3572,14 @@
                 swRegistration = await navigator.serviceWorker.register('/service-worker.js');
                 console.log('Service Worker registered');
 
+                // Fetch VAPID public key from server
+                const response = await fetch(`${API_URL}/vapid-public-key`);
+                const { publicKey } = await response.json();
+
                 // Subscribe to push notifications
                 const subscription = await swRegistration.pushManager.subscribe({
                     userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array('BIN2_am3NxcC8bpo8UJfzSkMogqb7EGvZDE2JEsk1LyFmjZhTlWbCQSz33G3WGYESQINQo5nE3gdnhwjMVza-tU')
+                    applicationServerKey: urlBase64ToUint8Array(publicKey)
                 });
 
                 // Send subscription to server

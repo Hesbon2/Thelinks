@@ -13,18 +13,18 @@ const Enquiry = require('./models/Enquiry');
 const PropertyListing = require('./models/PropertyListing');
 const config = require('./config');
 
-// Configure web push
-const vapidKeys = webpush.generateVAPIDKeys();
+// Configure web push with environment variables
 webpush.setVapidDetails(
     'mailto:hesbonmakori15@gmail.com',
-    vapidKeys.publicKey,
-    vapidKeys.privateKey
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
 );
 
-// Store this somewhere safe and use it in your client-side code
-console.log('VAPID Public Key:', vapidKeys.publicKey);
-
+// Make VAPID public key available via API
 const app = express();
+app.get('/api/vapid-public-key', (req, res) => {
+    res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
+});
 
 // Middleware
 app.use(cors({

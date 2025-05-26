@@ -1,0 +1,3598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Enquiries</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF5A5F;
+            --secondary-color: #00A699;
+            --dark-color: #484848;
+            --light-color: #f7f7f7;
+            --border-color: #ebebeb;
+            --host-color: #914669;
+            --agent-color: #1070CA;
+            --customer-color: #47B881;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+        
+        .enquiry-form {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #e04a4f;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .filter-group {
+            margin-bottom: 0;
+        }
+        
+        .filter-group label {
+            font-size: 14px;
+        }
+        
+        .enquiry-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .enquiry-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .enquiry-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            background-color: #ddd;
+        }
+        
+        .user-info h3 {
+            margin: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-type {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            color: white;
+        }
+        
+        .user-type.host {
+            background-color: var(--host-color);
+        }
+        
+        .user-type.agent {
+            background-color: var(--agent-color);
+        }
+        
+        .user-type.customer {
+            background-color: var(--customer-color);
+        }
+        
+        .user-info p {
+            margin: 5px 0 0;
+            color: #767676;
+            font-size: 14px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .enquiry-title {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .nights-count {
+            background-color: rgba(0, 166, 153, 0.1);
+            color: var(--secondary-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .budget {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        
+        .budget i {
+            margin-right: 8px;
+            color: var(--secondary-color);
+        }
+        
+        .enquiry-dates {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+        
+        .enquiry-dates i {
+            margin-right: 8px;
+        }
+        
+        .enquiry-description {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .card-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #767676;
+            font-size: 14px;
+            min-width: 60px;
+            flex: 1;
+        }
+        
+        .stat i {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+        }
+        
+        .stat span {
+            white-space: nowrap;
+            text-align: center;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            min-width: 70px;
+        }
+        
+        .action-btn i {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        
+        .action-btn span {
+            white-space: nowrap;
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(255, 90, 95, 0.1);
+        }
+        
+        .action-btn.reply {
+            color: var(--secondary-color);
+        }
+        
+        .action-btn.reply:hover {
+            background-color: rgba(0, 166, 153, 0.1);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #767676;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            background-color: #ddd;
+        }
+        
+        .modal-user-info h2 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-details {
+            margin-top: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+        }
+        
+        .contact-icon.phone {
+            background-color: var(--agent-color);
+        }
+        
+        .contact-icon.whatsapp {
+            background-color: #25D366;
+        }
+        
+        .contact-icon.email {
+            background-color: var(--primary-color);
+        }
+        
+        .contact-info h4 {
+            margin: 0 0 5px;
+        }
+        
+        .contact-info p {
+            margin: 0;
+            color: #767676;
+            font-size: 14px;
+        }
+        
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .contact-action {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-action i {
+            margin-right: 5px;
+        }
+        
+        .contact-action.call {
+            background-color: var(--agent-color);
+        }
+        
+        .contact-action.message {
+            background-color: #25D366;
+        }
+        
+        .contact-action.mail {
+            background-color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .enquiry-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+        
+        .tab-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--dark-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 90, 95, 0.2);
+        }
+        
+        .tab-btn[data-tab="listing"].active {
+            background: var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(0, 166, 153, 0.2);
+        }
+        
+        .property-type {
+            background: var(--secondary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Remove image upload related styles */
+        .image-upload,
+        .image-upload:hover,
+        .image-upload.dragover,
+        .image-preview,
+        .preview-item,
+        .preview-image,
+        .remove-image {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .card-footer {
+                flex-direction: row;
+                gap: 10px;
+            }
+            
+            .stats, .actions {
+                gap: 10px;
+            }
+            
+            .stat, .action-btn {
+                min-width: 50px;
+                font-size: 12px;
+            }
+            
+            .stat i, .action-btn i {
+                font-size: 16px;
+            }
+        }
+
+        /* Chat Window Styles */
+        .chat-window {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .chat-window.active {
+            right: 0;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-participants {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .chat-participant {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .chat-participant img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .message-user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .message-user-info img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+
+        .message.sent {
+            margin-left: auto;
+        }
+
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.received .message-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .message.sent .message-content {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .chat-input form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .chat-input button {
+            padding: 12px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .chat-input button:hover {
+            background-color: #e04a4f;
+        }
+
+        @media (max-width: 768px) {
+            .chat-window {
+                right: -100%;
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        /* Authentication styles */
+        .auth-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            background: var(--light-color);
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .auth-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .auth-form button:hover {
+            background: #e04a4f;
+        }
+
+        .auth-error {
+            color: var(--primary-color);
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-menu img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .user-menu .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            display: none;
+        }
+
+        .user-menu .dropdown.active {
+            display: block;
+        }
+
+        .user-menu .dropdown a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .user-menu .dropdown a:hover {
+            background: var(--light-color);
+        }
+
+        .auth-button {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .auth-button:hover {
+            background: #e04a4f;
+        }
+
+        .login-prompt {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-prompt .auth-button {
+            padding: 12px 30px;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .login-prompt .auth-button:hover {
+            transform: scale(1.05);
+        }
+
+        .auth-required-message {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 40px 20px;
+            margin: 40px auto;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .auth-required-content {
+            margin: 0 auto;
+        }
+
+        .auth-required-message i {
+            font-size: 64px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .auth-required-message h2 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+
+        .auth-required-message p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .auth-required-message .auth-button {
+            font-size: 18px;
+            padding: 15px 40px;
+            margin-bottom: 30px;
+        }
+
+        .features-preview {
+            text-align: left;
+            background: var(--light-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .features-preview h3 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .features-preview ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .features-preview li {
+            padding: 10px 0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-preview li i {
+            color: var(--primary-color);
+            width: 24px;
+            text-align: center;
+        }
+
+        #mainContent {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        #mainContent.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Add these new styles */
+        .chat-item-info {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin: 10px;
+        }
+
+        .chat-item-info h4 {
+            margin: 0;
+            color: white;
+            font-size: 16px;
+        }
+
+        .chat-item-info p {
+            margin: 5px 0 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            max-width: 85%;
+        }
+
+        .message.reply {
+            margin-left: 40px;
+            max-width: calc(85% - 40px);
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .message-user-pic {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .message-user-info {
+            flex: 1;
+        }
+
+        .message-user-name {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .message-timestamp {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .message-content {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+            padding-left: 42px;
+        }
+
+        .message-action {
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .message-action:hover {
+            color: var(--primary-color);
+        }
+
+        .message-action.liked {
+            color: var(--primary-color);
+        }
+
+        .message-likes {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            padding-left: 42px;
+        }
+
+        .reply-form {
+            margin: 10px 0 10px 42px;
+            display: none;
+        }
+
+        .reply-form.active {
+            display: block;
+        }
+
+        .reply-input-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .reply-input-container input {
+            flex: 1;
+            width: auto;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .reply-send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .reply-send-btn:hover {
+            background-color: #e04a4f;
+        }
+
+        .reply-send-btn i {
+            font-size: 16px;
+        }
+
+        .chat-input .login-prompt {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 90, 95, 0.1);
+            border-radius: 8px;
+            margin: 10px;
+        }
+
+        .chat-input .login-prompt p {
+            margin: 0 0 10px;
+            color: var(--primary-color);
+        }
+
+        .card-footer .action-btn.save.bookmarked {
+            color: var(--primary-color);
+        }
+
+        .card-footer .action-btn.save.bookmarked i {
+            font-weight: 900;
+        }
+
+        /* Bookmarks Modal */
+        .bookmarks-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bookmarks-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .bookmarks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-right: 40px;
+        }
+
+        .bookmarks-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .bookmarks-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .no-bookmarks {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Fix close button styles for modals */
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* Mobile Responsive Fixes */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                padding-top: 60px; /* Add space for fixed user menu */
+            }
+
+            .user-menu {
+                position: fixed;
+                top: 0;
+                right: 0;
+                left: 0;
+                background: white;
+                padding: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                z-index: 100;
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+
+            .user-menu .dropdown {
+                position: absolute;
+                top: 100%;
+                right: 10px;
+                width: 200px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .tab-navigation {
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 140px;
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .enquiry-form {
+                margin-top: 20px;
+            }
+
+            .enquiry-card {
+                margin-bottom: 15px;
+            }
+
+            .card-footer {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 15px;
+                gap: 8px;
+            }
+
+            .stats {
+                display: flex;
+                justify-content: flex-start;
+                gap: 8px;
+                flex: 1;
+                min-width: 0;
+            }
+
+            .stat {
+                min-width: auto;
+                flex: 0 1 auto;
+                font-size: 12px;
+            }
+
+            .stat i {
+                font-size: 14px;
+            }
+
+            .actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+                flex: 1;
+                min-width: 0;
+            }
+
+            .action-btn {
+                min-width: auto;
+                flex: 0 1 auto;
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+
+            .action-btn i {
+                font-size: 14px;
+                margin-bottom: 2px;
+            }
+
+            /* Fix bookmarks modal for mobile */
+            .bookmarks-content {
+                width: 95%;
+                max-width: none;
+                padding: 15px;
+                margin: 10px;
+            }
+
+            .bookmarks-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Fix for very small screens */
+        @media (max-width: 380px) {
+            .tab-navigation {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-btn {
+                max-width: none;
+            }
+        }
+
+        .chat-input .login-prompt {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 90, 95, 0.1);
+            border-radius: 8px;
+            margin: 10px;
+        }
+
+        .chat-input .login-prompt p {
+            margin: 0 0 10px;
+            color: var(--primary-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* My Posts Modal */
+        .my-posts-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .my-posts-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .my-posts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-right: 40px;
+        }
+
+        .my-posts-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .my-posts-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .no-posts {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Fix close button styles for modals */
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* Update bookmarks modal to use new close button style */
+        .bookmarks-content {
+            position: relative;
+        }
+
+        /* Add notification styles */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .notifications-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .notification-toast {
+            background: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: transform 0.3s, opacity 0.3s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification-toast.exiting {
+            animation: slideOut 0.3s ease-out;
+        }
+
+        .notification-toast img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content h4 {
+            margin: 0;
+            color: var(--dark-color);
+        }
+
+        .notification-content p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .unread-indicator {
+            position: relative;
+        }
+
+        /* Update existing styles */
+        .action-btn.reply {
+            position: relative;
+        }
+
+        .message {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add notifications container -->
+    <div class="notifications-container" id="notificationsContainer"></div>
+
+    <div class="container">
+        <!-- User Menu -->
+        <div class="user-menu" id="userMenu">
+            <button class="auth-button" id="authButton">Login / Register</button>
+            <div id="userProfile" style="display: none;">
+                <img src="" alt="Profile" id="userProfilePic">
+                <div class="dropdown">
+                    <a href="#" id="profileLink">Profile</a>
+                    <a href="#" id="myPostsLink">My Posts</a>
+                    <a href="#" id="bookmarksLink">Bookmarks</a>
+                    <a href="#" id="logoutLink">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <h1>Property Connect</h1>
+        
+        <!-- Authentication Required Message -->
+        <div id="authRequiredMessage" class="auth-required-message">
+            <div class="auth-required-content">
+                <i class="fas fa-lock"></i>
+                <h2>Welcome to Property Connect</h2>
+                <p>Please login or create an account to access property listings, post enquiries, and connect with property owners.</p>
+                <button class="auth-button" onclick="document.getElementById('authButton').click()">Login / Register</button>
+                <div class="features-preview">
+                    <h3>What you'll get access to:</h3>
+                    <ul>
+                        <li><i class="fas fa-search"></i> Browse all property listings</li>
+                        <li><i class="fas fa-home"></i> Post your property listings</li>
+                        <li><i class="fas fa-comment-alt"></i> Send enquiries to owners</li>
+                        <li><i class="fas fa-filter"></i> Advanced search filters</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Container (Hidden by default) -->
+        <div id="mainContent" style="display: none;">
+            <!-- Post Forms Container -->
+            <div id="postFormsContainer">
+                <!-- Tab Navigation -->
+                <div class="tab-navigation">
+                    <button class="tab-btn active" data-tab="seeker">
+                        <i class="fas fa-search"></i> Find Property
+                    </button>
+                    <button class="tab-btn" data-tab="listing">
+                        <i class="fas fa-home"></i> List Property
+                    </button>
+                </div>
+                
+                <!-- Property Seeker Form -->
+                <div class="enquiry-form" id="seekerForm">
+                    <h2>Looking for a Property?</h2>
+                    <form id="enquiryForm">
+                        <div class="form-group">
+                            <label for="userType">You are a</label>
+                            <select id="userType" required>
+                                <option value="customer">Customer</option>
+                                <option value="host">Host</option>
+                                <option value="agent">Agent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="unitSize">Unit Size</label>
+                            <select id="unitSize" required>
+                                <option value="">Select unit size</option>
+                                <option value="1 bedroom">1 bedroom</option>
+                                <option value="2 bedrooms">2 bedrooms</option>
+                                <option value="3 bedrooms">3 bedrooms</option>
+                                <option value="4+ bedrooms">4+ bedrooms</option>
+                                <option value="Studio">Studio</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="budget">Budget per day (KSH)</label>
+                            <input type="number" id="budget" placeholder="e.g. 5000" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="checkIn">Check-in Date</label>
+                            <input type="date" id="checkIn" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="checkOut">Check-out Date</label>
+                            <input type="date" id="checkOut" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="location">Location Preference</label>
+                            <input type="text" id="location" placeholder="e.g. Kwale town" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="amenities">Special Requirements</label>
+                            <input type="text" id="amenities" placeholder="e.g. must have swimming pool, parking, etc.">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">Detailed Description</label>
+                            <textarea id="description" placeholder="Tell us more about what you're looking for..." required></textarea>
+                        </div>
+                        
+                        <button type="submit">Post Enquiry</button>
+                    </form>
+                </div>
+                
+                <!-- Property Listing Form -->
+                <div class="enquiry-form" id="listingForm" style="display: none;">
+                    <h2>List Your Property</h2>
+                    <form id="propertyListingForm">
+                        <div class="form-group">
+                            <label for="listingUserType">You are a</label>
+                            <select id="listingUserType" required>
+                                <option value="host">Property Owner</option>
+                                <option value="agent">Real Estate Agent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="propertyType">Property Type</label>
+                            <select id="propertyType" required>
+                                <option value="">Select property type</option>
+                                <option value="Studio">Studio</option>
+                                <option value="1 bedroom">1 bedroom</option>
+                                <option value="2 bedrooms">2 bedrooms</option>
+                                <option value="3 bedrooms">3 bedrooms</option>
+                                <option value="4+ bedrooms">4+ bedrooms</option>
+                                <option value="Villa">Villa</option>
+                                <option value="Penthouse">Penthouse</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="listingPrice">Price per day (KSH)</label>
+                            <input type="number" id="listingPrice" placeholder="e.g. 5000" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="propertyLocation">Property Location</label>
+                            <input type="text" id="propertyLocation" placeholder="e.g. Kwale town" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="availableFrom">Available From</label>
+                            <input type="date" id="availableFrom" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="availableTo">Available Until</label>
+                            <input type="date" id="availableTo" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="propertyAmenities">Available Amenities</label>
+                            <input type="text" id="propertyAmenities" placeholder="e.g. Swimming pool, parking, etc.">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="propertyDescription">Property Description</label>
+                            <textarea id="propertyDescription" placeholder="Describe your property in detail..." required></textarea>
+                        </div>
+                        
+                        <button type="submit">List Property</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Filters and Listings -->
+            <div class="filters" id="filters">
+                <div class="filter-group">
+                    <label for="filterLocation">Location</label>
+                    <select id="filterLocation">
+                        <option value="">All Locations</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterUserType">Requester Type</label>
+                    <select id="filterUserType">
+                        <option value="">All Types</option>
+                        <option value="host">Host</option>
+                        <option value="agent">Agent</option>
+                        <option value="customer">Customer</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterDate">Date Range</label>
+                    <select id="filterDate">
+                        <option value="">Any Date</option>
+                        <option value="this_week">This Week</option>
+                        <option value="next_week">Next Week</option>
+                        <option value="this_month">This Month</option>
+                        <option value="next_month">Next Month</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterNights">Nights</label>
+                    <select id="filterNights">
+                        <option value="">Any Duration</option>
+                        <option value="1-3">1-3 nights</option>
+                        <option value="4-7">4-7 nights</option>
+                        <option value="8-14">8-14 nights</option>
+                        <option value="15+">15+ nights</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterBudget">Budget</label>
+                    <select id="filterBudget">
+                        <option value="">Any Budget</option>
+                        <option value="0-5000">Under KSH 5,000</option>
+                        <option value="5001-10000">KSH 5,001-10,000</option>
+                        <option value="10001-20000">KSH 10,001-20,000</option>
+                        <option value="20001+">Over KSH 20,000</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="enquiry-list" id="enquiryList">
+                <!-- Enquiry cards will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Modal -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <img src="" alt="Profile" class="modal-profile-pic" id="modalProfilePic">
+                <div class="modal-user-info">
+                    <h2 id="modalUserName"></h2>
+                    <span class="user-type" id="modalUserType"></span>
+                </div>
+            </div>
+            
+            <div class="contact-details">
+                <div class="contact-item">
+                    <div class="contact-icon phone">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Phone Number</h4>
+                        <p id="modalPhone">+254 700 123456</p>
+                        <div class="contact-actions">
+                            <div class="contact-action call">
+                                <i class="fas fa-phone"></i> Call
+                            </div>
+                            <div class="contact-action message">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>WhatsApp</h4>
+                        <p id="modalWhatsApp">+254 700 123456</p>
+                        <div class="contact-actions">
+                            <div class="contact-action message">
+                                <i class="fab fa-whatsapp"></i> Message
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon email">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Email</h4>
+                        <p id="modalEmail">user@example.com</p>
+                        <div class="contact-actions">
+                            <div class="contact-action mail">
+                                <i class="fas fa-envelope"></i> Email
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="chat-window" id="messagingWindow">
+        <div class="chat-header">
+            <div class="chat-header-top">
+                <h3>Discussion</h3>
+                <button class="close-chat" id="closeMessaging">&times;</button>
+            </div>
+            <div class="chat-item-info" id="chatItemInfo">
+                <!-- Item details will be added here -->
+            </div>
+        </div>
+        <div class="chat-messages" id="messagesList">
+            <!-- Messages will be added here dynamically -->
+        </div>
+        <div class="chat-input">
+            <form id="messageForm">
+                <input type="text" placeholder="Join the discussion..." id="newMessageInput" required>
+                <button type="submit">Send</button>
+            </form>
+            <div class="login-prompt" id="chatLoginPrompt" style="display: none;">
+                <p>Please login to join the discussion</p>
+                <button onclick="document.getElementById('authButton').click()" class="auth-button">Login / Register</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div class="auth-container" id="authModal">
+        <div class="auth-content">
+            <div class="auth-header">
+                <h2>Welcome to Property Connect</h2>
+            </div>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="register">Register</div>
+            </div>
+            <form class="auth-form active" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit">Login</button>
+                <div class="auth-error" id="loginError"></div>
+            </form>
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerUserType">User Type</label>
+                    <select id="registerUserType" required>
+                        <option value="customer">Customer</option>
+                        <option value="host">Host</option>
+                        <option value="agent">Agent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Phone</label>
+                    <input type="tel" id="registerPhone">
+                </div>
+                <div class="form-group">
+                    <label for="registerWhatsapp">WhatsApp</label>
+                    <input type="tel" id="registerWhatsapp">
+                </div>
+                <button type="submit">Register</button>
+                <div class="auth-error" id="registerError"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bookmarks Modal -->
+    <div class="bookmarks-modal" id="bookmarksModal">
+        <div class="bookmarks-content">
+            <div class="bookmarks-header">
+                <h2>Your Bookmarks</h2>
+            </div>
+            <button class="modal-close">&times;</button>
+            <div class="bookmarks-list" id="bookmarksList">
+                <!-- Bookmarked items will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- My Posts Modal -->
+    <div class="my-posts-modal" id="myPostsModal">
+        <div class="my-posts-content">
+            <div class="my-posts-header">
+                <h2>My Posts</h2>
+            </div>
+            <button class="modal-close">&times;</button>
+            <div class="my-posts-list" id="myPostsList">
+                <!-- Posts will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication state
+        let currentUser = null;
+        const API_URL = 'http://localhost:3000/api';  // Make sure this matches your server port
+        let enquiries = [];
+        let propertyListings = [];
+
+        // DOM Elements
+        const authModal = document.getElementById('authModal');
+        const authButton = document.getElementById('authButton');
+        const userProfile = document.getElementById('userProfile');
+        const userProfilePic = document.getElementById('userProfilePic');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginError = document.getElementById('loginError');
+        const registerError = document.getElementById('registerError');
+        const logoutLink = document.getElementById('logoutLink');
+        const userProfilePicture = document.getElementById('userProfilePic');
+        const contactModal = document.getElementById('contactModal');
+        const postFormsContainer = document.getElementById('postFormsContainer');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+
+        // Messaging functionality
+        const messagingWindow = document.getElementById('messagingWindow');
+        const closeMessaging = document.getElementById('closeMessaging');
+        const messagesList = document.getElementById('messagesList');
+        const messageForm = document.getElementById('messageForm');
+        const newMessageInput = document.getElementById('newMessageInput');
+        const messagingUserPic = document.getElementById('messagingUserPic');
+        const messagingUserName = document.getElementById('messagingUserName');
+        const chatParticipants = document.getElementById('chatParticipants');
+
+        // Close messaging window
+        closeMessaging.addEventListener('click', () => {
+            messagingWindow.classList.remove('active');
+        });
+
+        // Modal functions
+        function closeModal(modalElement) {
+            modalElement.style.display = 'none';
+        }
+
+        function openModal(modalElement) {
+            modalElement.style.display = 'flex';
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === authModal) {
+                closeModal(authModal);
+            }
+            if (event.target === contactModal) {
+                closeModal(contactModal);
+            }
+        });
+
+        // Close button event listeners
+        document.querySelectorAll('.close-modal').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                if (modal) {
+                    closeModal(modal);
+                }
+            });
+        });
+
+        // Check if user is already logged in
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetchCurrentUser();
+        }
+
+        // Event Listeners
+        authButton.addEventListener('click', () => {
+            authModal.style.display = 'flex';
+        });
+
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.style.display = 'none';
+            }
+        });
+
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and forms
+                authTabs.forEach(t => t.classList.remove('active'));
+                authForms.forEach(f => f.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding form
+                tab.classList.add('active');
+                document.querySelector(`.auth-form#${tab.dataset.tab}Form`).classList.add('active');
+            });
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error);
+                }
+
+                // Store token and user data
+                localStorage.setItem('token', data.token);
+                currentUser = data.user;
+                updateUIForUser();
+                authModal.style.display = 'none';
+                loginForm.reset();
+            } catch (error) {
+                loginError.textContent = error.message;
+                loginError.style.display = 'block';
+            }
+        });
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                userType: document.getElementById('registerUserType').value,
+                phone: document.getElementById('registerPhone').value,
+                whatsapp: document.getElementById('registerWhatsapp').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error);
+                }
+
+                // Store token and user data
+                localStorage.setItem('token', data.token);
+                currentUser = data.user;
+                updateUIForUser();
+                authModal.style.display = 'none';
+                registerForm.reset();
+            } catch (error) {
+                registerError.textContent = error.message;
+                registerError.style.display = 'block';
+            }
+        });
+
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
+
+        userProfilePicture.addEventListener('click', () => {
+            const dropdown = document.querySelector('.user-menu .dropdown');
+            dropdown.classList.toggle('active');
+        });
+
+        // Functions
+        async function fetchCurrentUser() {
+            try {
+                const response = await fetch(`${API_URL}/user`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+
+                const data = await response.json();
+                currentUser = data.user;
+                updateUIForUser();
+            } catch (error) {
+                console.error('Error fetching user:', error);
+                logout();
+            }
+        }
+
+        function updateUIForUser() {
+            const mainContent = document.getElementById('mainContent');
+            const authRequiredMessage = document.getElementById('authRequiredMessage');
+
+            if (currentUser) {
+                // Show user profile and hide login button
+                authButton.style.display = 'none';
+                userProfile.style.display = 'flex';
+                userProfilePic.src = currentUser.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+                userProfilePic.alt = currentUser.name;
+
+                // Show main content and hide auth message
+                authRequiredMessage.style.display = 'none';
+                mainContent.style.display = 'block';
+                setTimeout(() => {
+                    mainContent.classList.add('visible');
+                }, 50);
+
+                // Initialize forms based on current tab
+                const activeTab = document.querySelector('.tab-btn.active');
+                if (activeTab) {
+                    if (activeTab.dataset.tab === 'seeker') {
+                        document.getElementById('seekerForm').style.display = 'block';
+                        document.getElementById('listingForm').style.display = 'none';
+                    } else {
+                        document.getElementById('seekerForm').style.display = 'none';
+                        document.getElementById('listingForm').style.display = 'block';
+                    }
+                }
+
+                // Fetch and display content
+                fetchEnquiries();
+                fetchListings();
+                initializeFilters();
+            } else {
+                // Show login button and hide user profile
+                authButton.style.display = 'block';
+                userProfile.style.display = 'none';
+
+                // Hide main content and show auth message
+                mainContent.classList.remove('visible');
+                setTimeout(() => {
+                    mainContent.style.display = 'none';
+                }, 300);
+                authRequiredMessage.style.display = 'block';
+
+                // Clear any existing data
+                enquiryList.innerHTML = '';
+                enquiries = [];
+                propertyListings = [];
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            currentUser = null;
+            updateUIForUser();
+        }
+
+        // Fetch enquiries and listings
+        async function fetchEnquiries() {
+            try {
+                const response = await fetch(`${API_URL}/enquiries`);
+                if (!response.ok) throw new Error('Failed to fetch enquiries');
+                enquiries = await response.json();
+                // Add type identifier
+                enquiries = enquiries.map(item => ({ ...item, itemType: 'enquiry' }));
+            } catch (error) {
+                console.error('Error fetching enquiries:', error);
+                enquiries = [];
+            }
+        }
+
+        async function fetchListings() {
+            try {
+                const response = await fetch(`${API_URL}/listings`);
+                if (!response.ok) throw new Error('Failed to fetch listings');
+                propertyListings = await response.json();
+                // Add type identifier
+                propertyListings = propertyListings.map(item => ({ ...item, itemType: 'listing' }));
+            } catch (error) {
+                console.error('Error fetching listings:', error);
+                propertyListings = [];
+            }
+        }
+
+        // Update view count
+        async function incrementViews(itemId, isListing = false) {
+            try {
+                const endpoint = isListing ? 'listings' : 'enquiries';
+                await fetch(`${API_URL}/${endpoint}/${itemId}/views`, {
+                    method: 'PATCH'
+                });
+            } catch (error) {
+                console.error('Error updating views:', error);
+            }
+        }
+
+        // Update reply count
+        async function incrementReplies(itemId, isListing = false) {
+            try {
+                const endpoint = isListing ? 'listings' : 'enquiries';
+                await fetch(`${API_URL}/${endpoint}/${itemId}/replies`, {
+                    method: 'PATCH'
+                });
+            } catch (error) {
+                console.error('Error updating replies:', error);
+            }
+        }
+
+        // Handle enquiry form submission
+        enquiryForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                alert('Please login to post an enquiry');
+                authModal.style.display = 'flex';
+                return;
+            }
+            
+            const formData = {
+                title: document.getElementById('unitSize').value,
+                budget: parseInt(document.getElementById('budget').value),
+                checkIn: document.getElementById('checkIn').value,
+                checkOut: document.getElementById('checkOut').value,
+                location: document.getElementById('location').value,
+                amenities: document.getElementById('amenities').value,
+                description: document.getElementById('description').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/enquiries`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to post enquiry');
+                }
+
+                const newEnquiry = await response.json();
+                enquiries.unshift(newEnquiry);
+                displayEnquiries();
+                enquiryForm.reset();
+
+                // Scroll to the new enquiry
+                window.scrollTo({
+                    top: enquiryList.offsetTop,
+                    behavior: 'smooth'
+                });
+
+                // Update location filter if new location
+                if (!Array.from(filterLocation.options).some(option => option.value === formData.location)) {
+                    const option = document.createElement('option');
+                    option.value = formData.location;
+                    option.textContent = formData.location;
+                    filterLocation.appendChild(option);
+                }
+            } catch (error) {
+                console.error('Error posting enquiry:', error);
+                alert('Failed to post enquiry. Please try again.');
+            }
+        });
+
+        // Handle property listing form submission
+        propertyListingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                alert('Please login to list a property');
+                authModal.style.display = 'flex';
+                return;
+            }
+            
+            const formData = {
+                title: `${document.getElementById('propertyType').value} in ${document.getElementById('propertyLocation').value}`,
+                propertyType: document.getElementById('propertyType').value,
+                price: parseInt(document.getElementById('listingPrice').value),
+                location: document.getElementById('propertyLocation').value,
+                availableFrom: document.getElementById('availableFrom').value,
+                availableTo: document.getElementById('availableTo').value,
+                amenities: document.getElementById('propertyAmenities').value,
+                description: document.getElementById('propertyDescription').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/listings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to post listing');
+                }
+
+                const newListing = await response.json();
+                propertyListings.unshift(newListing);
+                propertyListingForm.reset();
+                
+                // Switch to seeker view and refresh the display
+                tabButtons[0].click();
+                displayEnquiries();
+                
+                alert('Property listed successfully!');
+            } catch (error) {
+                console.error('Error posting listing:', error);
+                alert('Failed to list property. Please try again.');
+            }
+        });
+
+        // Display enquiries
+        async function displayEnquiries(enquiriesToShow = enquiries) {
+            enquiryList.innerHTML = '';
+            
+            // Combine items and remove duplicates
+            const allItems = [...enquiriesToShow];
+            
+            // Only add listings if we're showing all items
+            if (enquiriesToShow === enquiries) {
+                allItems.push(...propertyListings);
+            }
+            
+            // Create a map using _id as key to remove duplicates
+            const uniqueItemsMap = new Map();
+            allItems.forEach(item => {
+                if (item && item._id) {
+                    uniqueItemsMap.set(item._id.toString(), item);
+                }
+            });
+            
+            // Convert back to array and sort by date
+            const uniqueItems = Array.from(uniqueItemsMap.values())
+                .sort((a, b) => new Date(b.posted) - new Date(a.posted));
+
+            // Debug log
+            console.log('Total unique items:', uniqueItems.length);
+            console.log('Enquiries:', enquiriesToShow.length);
+            console.log('Listings:', propertyListings.length);
+            
+            for (const item of uniqueItems) {
+                const card = document.createElement('div');
+                card.className = 'enquiry-card';
+                card.dataset.itemId = item._id;
+                card.dataset.itemType = item.itemType; // Add type to dataset
+                
+                const isListing = item.itemType === 'listing';
+                const dateRange = isListing 
+                    ? formatDateRange(item.availableFrom, item.availableTo)
+                    : formatDateRange(item.checkIn, item.checkOut);
+                
+                const user = item.userId;
+                if (!user) {
+                    console.error('Missing user data for item:', item);
+                    continue; // Skip items with missing user data
+                }
+
+                const postedDate = new Date(item.posted).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                // Check if item is bookmarked
+                let isBookmarked = false;
+                if (currentUser) {
+                    try {
+                        const response = await fetch(`${API_URL}/bookmarks/check/${item._id}`, {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        });
+                        const data = await response.json();
+                        isBookmarked = data.bookmarked;
+                    } catch (error) {
+                        console.error('Error checking bookmark status:', error);
+                    }
+                }
+
+                // Escape special characters in strings
+                const escapedTitle = (item.title || '').replace(/'/g, "\\'");
+                const escapedDescription = (item.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
+                
+                card.innerHTML = `
+                    <div class="card-header" data-user-id="${user._id}">
+                        <img src="${user.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" 
+                             alt="${user.name}" class="profile-pic">
+                        <div class="user-info">
+                            <h3>${user.name} <span class="user-type ${user.userType}">${getUserTypeText(user.userType)}</span></h3>
+                            <p>Posted: ${postedDate}</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="title-row">
+                            <h3 class="enquiry-title">${item.title}</h3>
+                            ${isListing 
+                                ? `<span class="property-type">${item.propertyType}</span>`
+                                : `<span class="nights-count">${calculateNights(item.checkIn, item.checkOut)} nights</span>`
+                            }
+                        </div>
+                        <div class="budget">
+                            <i class="fas fa-money-bill-wave"></i>
+                            ${isListing ? 'Price' : 'Budget'}: ${formatCurrency(isListing ? item.price : item.budget)}/day
+                        </div>
+                        <div class="enquiry-dates">
+                            <i class="fas fa-calendar-alt"></i>
+                            ${isListing ? 'Available: ' : ''}${dateRange}
+                        </div>
+                        <div class="enquiry-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            ${item.location}
+                        </div>
+                        ${item.amenities ? `<div class="enquiry-amenities">
+                            <i class="fas fa-star"></i>
+                            ${item.amenities}
+                        </div>` : ''}
+                        <p class="enquiry-description">${item.description || ''}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <div class="stat">
+                                <i class="fas fa-comment"></i>
+                                <span>${item.replies || 0} ${(item.replies || 0) === 1 ? 'reply' : 'replies'}</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-eye"></i>
+                                <span>${item.views || 0} views</span>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button class="action-btn reply" onclick="startMessaging('${item._id}', '${escapedTitle}', '${escapedDescription}')">
+                                <i class="fas fa-reply"></i>
+                                <span>Join Discussion ${(item.replies || 0) > 0 ? `(${item.replies})` : ''}</span>
+                            </button>
+                            <button class="action-btn save ${isBookmarked ? 'bookmarked' : ''}" 
+                                    onclick="toggleBookmark('${item._id}', '${item.itemType}', this)">
+                                <i class="${isBookmarked ? 'fas' : 'far'} fa-bookmark"></i>
+                                <span>${isBookmarked ? 'Saved' : 'Save'}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                enquiryList.appendChild(card);
+                
+                // Increment view count
+                incrementViews(item._id, isListing);
+            }
+        }
+
+        // Initialize display after both fetches complete
+        async function initializeDisplay() {
+            await Promise.all([fetchEnquiries(), fetchListings()]);
+            displayEnquiries();
+            initializeFilters();
+        }
+
+        // Call initialize on page load
+        initializeDisplay();
+
+        // Helper function to create item card (used in bookmarks)
+        function createItemCard(item, isBookmarked = false) {
+            const card = document.createElement('div');
+            card.className = 'enquiry-card';
+            card.dataset.itemId = item._id;
+            
+            const isListing = 'propertyType' in item;
+            const dateRange = isListing 
+                ? formatDateRange(item.availableFrom, item.availableTo)
+                : formatDateRange(item.checkIn, item.checkOut);
+            
+            const user = item.userId;
+            const postedDate = new Date(item.posted).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // Escape special characters in strings
+            const escapedTitle = item.title.replace(/'/g, "\\'");
+            const escapedDescription = (item.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
+            
+            card.innerHTML = `
+                <div class="card-header" data-user-id="${user._id}">
+                    <img src="${user.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" 
+                         alt="${user.name}" class="profile-pic">
+                    <div class="user-info">
+                        <h3>${user.name} <span class="user-type ${user.userType}">${getUserTypeText(user.userType)}</span></h3>
+                        <p>Posted: ${postedDate}</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="title-row">
+                        <h3 class="enquiry-title">${item.title}</h3>
+                        ${isListing 
+                            ? `<span class="property-type">${item.propertyType}</span>`
+                            : `<span class="nights-count">${calculateNights(item.checkIn, item.checkOut)} nights</span>`
+                        }
+                    </div>
+                    <div class="budget">
+                        <i class="fas fa-money-bill-wave"></i>
+                        ${isListing ? 'Price' : 'Budget'}: ${formatCurrency(isListing ? item.price : item.budget)}/day
+                    </div>
+                    <div class="enquiry-dates">
+                        <i class="fas fa-calendar-alt"></i>
+                        ${isListing ? 'Available: ' : ''}${dateRange}
+                    </div>
+                    <div class="enquiry-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        ${item.location}
+                    </div>
+                    ${item.amenities ? `<div class="enquiry-amenities">
+                        <i class="fas fa-star"></i>
+                        ${item.amenities}
+                    </div>` : ''}
+                    <p class="enquiry-description">${item.description}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <div class="stat">
+                            <i class="fas fa-comment"></i>
+                            <span>${item.replies} ${item.replies === 1 ? 'reply' : 'replies'}</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-eye"></i>
+                            <span>${item.views} views</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="action-btn reply" onclick="startMessaging('${item._id}', '${escapedTitle}', '${escapedDescription}')">
+                            <i class="fas fa-reply"></i>
+                            <span>Join Discussion ${item.replies > 0 ? `(${item.replies})` : ''}</span>
+                        </button>
+                        <button class="action-btn save ${isBookmarked ? 'bookmarked' : ''}" 
+                                onclick="toggleBookmark('${item._id}', '${isListing ? 'listing' : 'enquiry'}', this)">
+                            <i class="${isBookmarked ? 'fas' : 'far'} fa-bookmark"></i>
+                            <span>${isBookmarked ? 'Saved' : 'Save'}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Show contact modal
+        function showContactModal(item) {
+            const user = item.userId;
+            modalProfilePic.src = user.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+            modalProfilePic.alt = user.name;
+            modalUserName.textContent = user.name;
+            modalUserType.textContent = getUserTypeText(user.userType);
+            modalUserType.className = `user-type ${user.userType}`;
+            modalPhone.textContent = user.phone || 'Not provided';
+            modalWhatsApp.textContent = user.whatsapp || 'Not provided';
+            modalEmail.textContent = user.email;
+            
+            contactModal.style.display = 'flex';
+        }
+
+        // Initialize filters with available options
+        function initializeFilters() {
+            // Get filter elements
+            const filterLocation = document.getElementById('filterLocation');
+            const filterUserType = document.getElementById('filterUserType');
+            const filterDate = document.getElementById('filterDate');
+            const filterNights = document.getElementById('filterNights');
+            const filterBudget = document.getElementById('filterBudget');
+
+            // Get unique locations from enquiries and listings
+            const locations = new Set([
+                ...enquiries.map(enquiry => enquiry.location),
+                ...propertyListings.map(listing => listing.location)
+            ]);
+            
+            // Clear existing options except the first one
+            filterLocation.innerHTML = '<option value="">All Locations</option>';
+            
+            // Add locations to filter dropdown
+            locations.forEach(location => {
+                if (location) {
+                    const option = document.createElement('option');
+                    option.value = location;
+                    option.textContent = location;
+                    filterLocation.appendChild(option);
+                }
+            });
+            
+            // Set up event listeners for filters
+            [filterLocation, filterUserType, filterDate, filterNights, filterBudget].forEach(filter => {
+                filter.addEventListener('change', applyFilters);
+            });
+        }
+
+        // Apply all active filters
+        function applyFilters() {
+            const filterLocation = document.getElementById('filterLocation');
+            const filterUserType = document.getElementById('filterUserType');
+            const filterDate = document.getElementById('filterDate');
+            const filterNights = document.getElementById('filterNights');
+            const filterBudget = document.getElementById('filterBudget');
+
+            const locationFilter = filterLocation.value;
+            const userTypeFilter = filterUserType.value;
+            const dateFilter = filterDate.value;
+            const nightsFilter = filterNights.value;
+            const budgetFilter = filterBudget.value;
+            
+            const filteredEnquiries = enquiries.filter(enquiry => {
+                // Location filter
+                if (locationFilter && enquiry.location !== locationFilter) {
+                    return false;
+                }
+                
+                // User type filter
+                if (userTypeFilter && enquiry.userId.userType !== userTypeFilter) {
+                    return false;
+                }
+                
+                // Date filter
+                if (dateFilter) {
+                    const today = new Date();
+                    const checkInDate = new Date(enquiry.checkIn);
+                    
+                    switch(dateFilter) {
+                        case 'this_week':
+                            const nextWeek = new Date(today);
+                            nextWeek.setDate(today.getDate() + 7);
+                            if (checkInDate < today || checkInDate > nextWeek) return false;
+                            break;
+                        case 'next_week':
+                            const nextWeekStart = new Date(today);
+                            nextWeekStart.setDate(today.getDate() + 7);
+                            const nextWeekEnd = new Date(today);
+                            nextWeekEnd.setDate(today.getDate() + 14);
+                            if (checkInDate < nextWeekStart || checkInDate > nextWeekEnd) return false;
+                            break;
+                        case 'this_month':
+                            const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                            const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                            if (checkInDate < thisMonthStart || checkInDate > thisMonthEnd) return false;
+                            break;
+                        case 'next_month':
+                            const nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                            const nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+                            if (checkInDate < nextMonthStart || checkInDate > nextMonthEnd) return false;
+                            break;
+                    }
+                }
+                
+                // Nights filter
+                if (nightsFilter) {
+                    const nights = calculateNights(enquiry.checkIn, enquiry.checkOut);
+                    const [min, max] = nightsFilter.split('-').map(Number);
+                    
+                    if (nightsFilter.endsWith('+')) {
+                        if (nights < parseInt(nightsFilter)) return false;
+                    } else if (nights < min || nights > max) {
+                        return false;
+                    }
+                }
+                
+                // Budget filter
+                if (budgetFilter) {
+                    const [min, max] = budgetFilter.split('-').map(Number);
+                    
+                    if (budgetFilter.endsWith('+')) {
+                        if (enquiry.budget < parseInt(budgetFilter)) return false;
+                    } else if (enquiry.budget < min || enquiry.budget > max) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            displayEnquiries(filteredEnquiries);
+        }
+
+        // Calculate number of nights between two dates
+        function calculateNights(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            return Math.round((end - start) / (1000 * 60 * 60 * 24));
+        }
+
+        // Update tab switching logic
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!currentUser) {
+                    alert('Please login to access this feature');
+                    authModal.style.display = 'flex';
+                    return;
+                }
+
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Show/hide forms based on selected tab
+                if (button.dataset.tab === 'seeker') {
+                    document.getElementById('seekerForm').style.display = 'block';
+                    document.getElementById('listingForm').style.display = 'none';
+                } else {
+                    document.getElementById('seekerForm').style.display = 'none';
+                    document.getElementById('listingForm').style.display = 'block';
+                }
+            });
+        });
+
+        // Helper Functions
+        function formatDateRange(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric'
+            };
+            
+            return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-KE', {
+                style: 'currency',
+                currency: 'KES',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function getUserTypeText(userType) {
+            const types = {
+                'host': 'Property Owner',
+                'agent': 'Real Estate Agent',
+                'customer': 'Customer'
+            };
+            return types[userType] || userType;
+        }
+
+        // Messaging functionality
+        function startMessaging(itemId, title, description) {
+            if (!currentUser) {
+                alert('Please login to join the discussion');
+                authModal.style.display = 'flex';
+                return;
+            }
+
+            // Update chat window header
+            document.getElementById('chatItemInfo').innerHTML = `
+                <h4>${title}</h4>
+                <p>${description}</p>
+            `;
+
+            // Store current item ID
+            messagingWindow.dataset.itemId = itemId;
+
+            // Show messaging window
+            messagingWindow.classList.add('active');
+
+            // Show/hide login prompt based on authentication
+            const messageForm = document.getElementById('messageForm');
+            const chatLoginPrompt = document.getElementById('chatLoginPrompt');
+            
+            if (currentUser) {
+                messageForm.style.display = 'flex';
+                chatLoginPrompt.style.display = 'none';
+            } else {
+                messageForm.style.display = 'none';
+                chatLoginPrompt.style.display = 'block';
+            }
+
+            // Load messages
+            loadMessages(itemId);
+        }
+
+        function loadMessages(itemId) {
+            // Clear existing messages
+            messagesList.innerHTML = '';
+
+            // Load messages from API
+            fetch(`${API_URL}/messages/${itemId}`)
+                .then(response => response.json())
+                .then(messages => {
+                    messages.forEach(message => {
+                        addMessageToChat(message);
+                        // Add replies if any
+                        if (message.replies && message.replies.length > 0) {
+                            message.replies.forEach(reply => {
+                                addMessageToChat(reply, true);
+                            });
+                        }
+                    });
+                    // Scroll to bottom
+                    messagesList.scrollTop = messagesList.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error loading messages:', error);
+                });
+        }
+
+        function addMessageToChat(message, isReply = false) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${isReply ? 'reply' : ''}`;
+            messageElement.dataset.messageId = message._id;
+            
+            const sender = message.senderId;
+            const isCurrentUser = currentUser && sender._id === currentUser.id;
+            const timestamp = new Date(message.timestamp).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            messageElement.innerHTML = `
+                <div class="message-header">
+                    <img src="${sender.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" 
+                         alt="${sender.name}" 
+                         class="message-user-pic">
+                    <div class="message-user-info">
+                        <h4 class="message-user-name">${sender.name}</h4>
+                        <span class="message-timestamp">${timestamp}</span>
+                    </div>
+                </div>
+                <div class="message-content">
+                    ${message.content}
+                </div>
+                <div class="message-actions">
+                    <span class="message-action" onclick="toggleReplyForm('${message._id}')">
+                        <i class="fas fa-reply"></i> Reply
+                    </span>
+                    <span class="message-action ${message.likes.includes(currentUser?.id) ? 'liked' : ''}" 
+                          onclick="toggleLike('${message._id}')">
+                        <i class="fas fa-heart"></i> 
+                        <span class="like-count">${message.likes.length}</span>
+                    </span>
+                </div>
+                <div class="message-likes">
+                    ${message.likes.length > 0 ? `Liked by ${message.likes.map(user => user.name).join(', ')}` : ''}
+                </div>
+                <div class="reply-form" id="replyForm-${message._id}">
+                    <div class="reply-input-container">
+                        <input type="text" placeholder="Write a reply..." 
+                               onkeypress="handleReplyKeyPress(event, '${message._id}')"
+                               id="replyInput-${message._id}">
+                        <button type="button" onclick="submitReply('${message._id}')" class="reply-send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            messagesList.appendChild(messageElement);
+        }
+
+        function handleReplyKeyPress(event, messageId) {
+            if (event.key === 'Enter') {
+                submitReply(messageId);
+            }
+        }
+
+        function submitReply(messageId) {
+            const input = document.getElementById(`replyInput-${messageId}`);
+            const content = input.value.trim();
+            
+            if (!content) return;
+
+            const itemId = messagingWindow.dataset.itemId;
+
+            fetch(`${API_URL}/messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    itemId,
+                    content,
+                    parentMessageId: messageId
+                })
+            })
+            .then(response => response.json())
+            .then(message => {
+                addMessageToChat(message, true);
+                input.value = '';
+                toggleReplyForm(messageId);
+                messagesList.scrollTop = messagesList.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error sending reply:', error);
+                alert('Failed to send reply. Please try again.');
+            });
+        }
+
+        function toggleReplyForm(messageId) {
+            if (!currentUser) {
+                alert('Please login to reply');
+                authModal.style.display = 'flex';
+                return;
+            }
+
+            const replyForm = document.getElementById(`replyForm-${messageId}`);
+            replyForm.classList.toggle('active');
+            if (replyForm.classList.contains('active')) {
+                replyForm.querySelector('input').focus();
+            }
+        }
+
+        function toggleLike(messageId) {
+            if (!currentUser) {
+                alert('Please login to like messages');
+                authModal.style.display = 'flex';
+                return;
+            }
+
+            fetch(`${API_URL}/messages/${messageId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then(response => response.json())
+            .then(message => {
+                const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+                const likeAction = messageElement.querySelector('.message-action:last-child');
+                const likeCount = likeAction.querySelector('.like-count');
+                const likesText = messageElement.querySelector('.message-likes');
+
+                likeCount.textContent = message.likes.length;
+                likeAction.classList.toggle('liked', message.likes.includes(currentUser.id));
+                likesText.textContent = message.likes.length > 0 ? 
+                    `Liked by ${message.likes.map(user => user.name).join(', ')}` : '';
+            })
+            .catch(error => {
+                console.error('Error updating like:', error);
+                alert('Failed to update like. Please try again.');
+            });
+        }
+
+        // Add message form submit handler
+        messageForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                alert('Please login to send a message');
+                authModal.style.display = 'flex';
+                return;
+            }
+            
+            const content = newMessageInput.value.trim();
+            if (!content) return;
+            
+            const itemId = messagingWindow.dataset.itemId;
+            const submitButton = this.querySelector('button');
+            submitButton.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_URL}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        itemId,
+                        content
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to send message');
+                }
+
+                addMessageToChat(data);
+                newMessageInput.value = '';
+                messagesList.scrollTop = messagesList.scrollHeight;
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert(error.message || 'Failed to send message. Please try again.');
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+
+        // Bookmarks functionality
+        const bookmarksModal = document.getElementById('bookmarksModal');
+        const bookmarksList = document.getElementById('bookmarksList');
+        const bookmarksLink = document.getElementById('bookmarksLink');
+
+        bookmarksLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loadBookmarks();
+            bookmarksModal.style.display = 'flex';
+        });
+
+        async function loadBookmarks() {
+            try {
+                const response = await fetch(`${API_URL}/bookmarks`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load bookmarks');
+                }
+
+                const bookmarks = await response.json();
+                
+                if (bookmarks.length === 0) {
+                    bookmarksList.innerHTML = `
+                        <div class="no-bookmarks">
+                            <i class="fas fa-bookmark fa-3x"></i>
+                            <h3>No bookmarks yet</h3>
+                            <p>Save items you're interested in to view them later.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                bookmarksList.innerHTML = '';
+                
+                // Fetch full details for each bookmarked item
+                const itemPromises = bookmarks.map(async (bookmark) => {
+                    const endpoint = bookmark.itemType === 'listing' ? 'listings' : 'enquiries';
+                    try {
+                        const itemResponse = await fetch(`${API_URL}/${endpoint}/${bookmark.itemId}`);
+                        if (!itemResponse.ok) return null;
+                        const item = await itemResponse.json();
+                        return { ...item, itemType: bookmark.itemType };
+                    } catch (error) {
+                        console.error(`Error fetching item ${bookmark.itemId}:`, error);
+                        return null;
+                    }
+                });
+
+                const items = await Promise.all(itemPromises);
+                const validItems = items.filter(item => item !== null);
+
+                if (validItems.length === 0) {
+                    bookmarksList.innerHTML = `
+                        <div class="no-bookmarks">
+                            <i class="fas fa-bookmark fa-3x"></i>
+                            <h3>No bookmarks available</h3>
+                            <p>There was an issue loading your bookmarks. Please try again later.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                validItems.forEach(item => {
+                    const card = createItemCard(item, true);
+                    bookmarksList.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading bookmarks:', error);
+                alert('Failed to load bookmarks. Please try again.');
+            }
+        }
+
+        async function toggleBookmark(itemId, itemType, button) {
+            if (!currentUser) {
+                alert('Please login to bookmark items');
+                authModal.style.display = 'flex';
+                return;
+            }
+
+            try {
+                button.disabled = true; // Prevent double-clicks
+                const icon = button.querySelector('i');
+                const text = button.querySelector('span');
+                
+                // Show loading state
+                icon.className = 'fas fa-spinner fa-spin';
+                text.textContent = 'Saving...';
+
+                const response = await fetch(`${API_URL}/bookmarks`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ itemId, itemType })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to toggle bookmark');
+                }
+
+                const data = await response.json();
+                
+                // Update button appearance
+                button.classList.toggle('bookmarked', data.bookmarked);
+                icon.className = data.bookmarked ? 'fas fa-bookmark' : 'far fa-bookmark';
+                text.textContent = data.bookmarked ? 'Saved' : 'Save';
+                
+                // Show success message
+                const message = data.bookmarked ? 'Item bookmarked successfully' : 'Bookmark removed';
+                showNotification(message, 'success');
+            } catch (error) {
+                console.error('Error toggling bookmark:', error);
+                // Reset button state
+                button.querySelector('i').className = button.classList.contains('bookmarked') ? 'fas fa-bookmark' : 'far fa-bookmark';
+                button.querySelector('span').textContent = button.classList.contains('bookmarked') ? 'Saved' : 'Save';
+                showNotification('Failed to update bookmark. Please try again.', 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        // Add notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            // Add styles for the notification
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '12px 24px';
+            notification.style.borderRadius = '8px';
+            notification.style.color = 'white';
+            notification.style.zIndex = '9999';
+            notification.style.animation = 'slideIn 0.3s ease-out';
+            
+            if (type === 'success') {
+                notification.style.backgroundColor = 'var(--secondary-color)';
+            } else {
+                notification.style.backgroundColor = 'var(--primary-color)';
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Add notification animations to existing styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add My Posts functionality
+        const myPostsModal = document.getElementById('myPostsModal');
+        const myPostsList = document.getElementById('myPostsList');
+        const myPostsLink = document.getElementById('myPostsLink');
+
+        myPostsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loadMyPosts();
+            myPostsModal.style.display = 'flex';
+        });
+
+        async function loadMyPosts() {
+            try {
+                // Fetch both enquiries and listings
+                const [enquiriesResponse, listingsResponse] = await Promise.all([
+                    fetch(`${API_URL}/enquiries?userId=${currentUser.id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }),
+                    fetch(`${API_URL}/listings?userId=${currentUser.id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    })
+                ]);
+
+                const myEnquiries = await enquiriesResponse.json();
+                const myListings = await listingsResponse.json();
+
+                // Combine and sort by date
+                const allPosts = [
+                    ...myEnquiries.map(item => ({ ...item, itemType: 'enquiry' })),
+                    ...myListings.map(item => ({ ...item, itemType: 'listing' }))
+                ].sort((a, b) => new Date(b.posted) - new Date(a.posted));
+
+                if (allPosts.length === 0) {
+                    myPostsList.innerHTML = `
+                        <div class="no-posts">
+                            <i class="fas fa-file-alt fa-3x"></i>
+                            <h3>No posts yet</h3>
+                            <p>Your posts will appear here once you create them.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                myPostsList.innerHTML = '';
+                allPosts.forEach(item => {
+                    const card = createItemCard(item);
+                    myPostsList.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading my posts:', error);
+                myPostsList.innerHTML = `
+                    <div class="no-posts">
+                        <i class="fas fa-exclamation-circle fa-3x"></i>
+                        <h3>Error loading posts</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update modal close functionality
+        document.querySelectorAll('.modal-close').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.my-posts-modal, .bookmarks-modal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('my-posts-modal')) {
+                event.target.style.display = 'none';
+            }
+            if (event.target.classList.contains('bookmarks-modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+
+        // Add WebSocket and notification functionality
+        let socket;
+        let unreadMessages = new Map(); // Store unread message counts
+        let activeChats = new Set(); // Store active chat IDs
+
+        function initializeWebSocket() {
+            if (!currentUser) return;
+
+            // Close existing socket if any
+            if (socket) {
+                socket.close();
+            }
+
+            socket = new WebSocket(`ws://localhost:3000/ws`); // Add /ws path
+
+            socket.onopen = () => {
+                console.log('WebSocket connected');
+                // Send authentication
+                socket.send(JSON.stringify({
+                    type: 'auth',
+                    token: localStorage.getItem('token')
+                }));
+                
+                // Add connection indicator
+                showNotificationToast({
+                    title: 'Connected',
+                    message: 'Real-time notifications are now active',
+                    type: 'success'
+                });
+            };
+
+            socket.onmessage = (event) => {
+                console.log('WebSocket message received:', event.data);
+                try {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+
+            socket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                showNotificationToast({
+                    title: 'Connection Error',
+                    message: 'Failed to establish real-time connection',
+                    type: 'error'
+                });
+            };
+
+            socket.onclose = () => {
+                console.log('WebSocket disconnected');
+                showNotificationToast({
+                    title: 'Disconnected',
+                    message: 'Attempting to reconnect...',
+                    type: 'warning'
+                });
+                // Attempt to reconnect after 5 seconds
+                setTimeout(initializeWebSocket, 5000);
+            };
+        }
+
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'new_message':
+                    handleNewMessage(data.message);
+                    break;
+                case 'new_reply':
+                    handleNewReply(data.reply);
+                    break;
+                case 'new_like':
+                    handleNewLike(data.message);
+                    break;
+            }
+        }
+
+        function handleNewMessage(message) {
+            // If message is in currently open chat, mark as read
+            const currentChatId = messagingWindow.dataset.itemId;
+            if (currentChatId === message.itemId && messagingWindow.classList.contains('active')) {
+                // Add message to chat
+                addMessageToChat(message);
+                messagesList.scrollTop = messagesList.scrollHeight;
+            } else {
+                // Increment unread count
+                const count = unreadMessages.get(message.itemId) || 0;
+                unreadMessages.set(message.itemId, count + 1);
+                updateUnreadIndicators();
+                
+                // Show notification
+                showNotificationToast({
+                    title: 'New Message',
+                    message: `${message.senderId.name} sent a message in "${message.itemTitle}"`,
+                    image: message.senderId.profilePic,
+                    onClick: () => startMessaging(message.itemId, message.itemTitle, '')
+                });
+            }
+        }
+
+        function handleNewReply(reply) {
+            // If reply is to user's message or post
+            if (reply.parentMessage.senderId === currentUser.id || reply.itemUserId === currentUser.id) {
+                showNotificationToast({
+                    title: 'New Reply',
+                    message: `${reply.senderId.name} replied to your ${reply.parentMessage.senderId === currentUser.id ? 'message' : 'post'}`,
+                    image: reply.senderId.profilePic,
+                    onClick: () => startMessaging(reply.itemId, reply.itemTitle, '')
+                });
+            }
+
+            // Update unread counts if not in current chat
+            const currentChatId = messagingWindow.dataset.itemId;
+            if (currentChatId !== reply.itemId || !messagingWindow.classList.contains('active')) {
+                const count = unreadMessages.get(reply.itemId) || 0;
+                unreadMessages.set(reply.itemId, count + 1);
+                updateUnreadIndicators();
+            }
+        }
+
+        function handleNewLike(message) {
+            // Update UI for the liked message if it's visible
+            const messageElement = document.querySelector(`[data-message-id="${message._id}"]`);
+            if (messageElement) {
+                const likeCount = messageElement.querySelector('.like-count');
+                if (likeCount) {
+                    likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                }
+            }
+
+            // Show notification if the message was liked by someone else
+            if (message.likedBy._id !== currentUser.id) {
+                showNotificationToast({
+                    title: 'New Like',
+                    message: `${message.likedBy.name} liked your message in "${message.itemTitle}"`,
+                    image: message.likedBy.profilePic,
+                    onClick: () => startMessaging(message.itemId, message.itemTitle, '')
+                });
+            }
+        }
+
+        function showNotificationToast({ title, message, image, onClick }) {
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `
+                <img src="${image || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" alt="Profile">
+                <div class="notification-content">
+                    <h4>${title}</h4>
+                    <p>${message}</p>
+                </div>
+                <span class="notification-time">Just now</span>
+            `;
+
+            toast.addEventListener('click', () => {
+                onClick();
+                removeToast(toast);
+            });
+
+            const container = document.getElementById('notificationsContainer');
+            container.appendChild(toast);
+
+            // Remove toast after 5 seconds
+            setTimeout(() => removeToast(toast), 5000);
+        }
+
+        function removeToast(toast) {
+            toast.classList.add('exiting');
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.parentElement.removeChild(toast);
+                }
+            }, 300);
+        }
+
+        function updateUnreadIndicators() {
+            // Update reply buttons on posts
+            document.querySelectorAll('.action-btn.reply').forEach(button => {
+                const itemId = button.closest('.enquiry-card').dataset.itemId;
+                const unreadCount = unreadMessages.get(itemId) || 0;
+                
+                // Remove existing badge if any
+                const existingBadge = button.querySelector('.notification-badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+                
+                if (unreadCount > 0) {
+                    const badge = document.createElement('div');
+                    badge.className = 'notification-badge';
+                    badge.textContent = unreadCount;
+                    button.appendChild(badge);
+                }
+            });
+        }
+
+        // Extend the existing startMessaging function
+        const baseStartMessaging = window.startMessaging;
+        window.startMessaging = function(itemId, title, description) {
+            // Call the original function first
+            if (baseStartMessaging) {
+                baseStartMessaging(itemId, title, description);
+            }
+            
+            // Add our new functionality
+            if (unreadMessages.has(itemId)) {
+                unreadMessages.delete(itemId);
+                updateUnreadIndicators();
+            }
+        };
+
+        // Extend the existing updateUIForUser function
+        const baseUpdateUIForUser = window.updateUIForUser;
+        window.updateUIForUser = function() {
+            // Call the original function first
+            if (baseUpdateUIForUser) {
+                baseUpdateUIForUser();
+            }
+            
+            // Add our new functionality
+            if (currentUser) {
+                initializePushNotifications();
+                initializeWebSocket();
+            }
+        };
+
+        // Add this before other JavaScript code
+        
+        // Push Notification Support
+        let swRegistration = null;
+        
+        // Check if the browser supports service workers and push notifications
+        async function initializePushNotifications() {
+            try {
+                if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                    console.log('Push notifications are not supported');
+                    return;
+                }
+
+                // Request notification permission
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    console.log('Notification permission denied');
+                    return;
+                }
+
+                // Register service worker
+                swRegistration = await navigator.serviceWorker.register('/service-worker.js');
+                console.log('Service Worker registered');
+
+                // Subscribe to push notifications
+                const subscription = await swRegistration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array('BMG07hYVpvExhJ41tijF7jlHQp5FaA4hxLPH2LFgpfUJcaleBuZuFlgU9AN6SKLGXGVz39mIsKuDdJGUwZAgI-4')
+                });
+
+                // Send subscription to server
+                await fetch(`${API_URL}/push-subscription`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(subscription)
+                });
+
+                console.log('Push notification subscription complete');
+            } catch (error) {
+                console.error('Error setting up push notifications:', error);
+            }
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+    </script>
+</body>
+</html>

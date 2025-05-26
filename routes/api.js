@@ -235,5 +235,41 @@ router.get('/bookmarks/check/:itemId', auth, async (req, res) => {
     }
 });
 
+// Updates endpoint for polling fallback
+router.get('/updates', auth, async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const since = req.query.since ? new Date(req.query.since) : new Date(Date.now() - 30000); // Last 30 seconds by default
+
+        // Fetch recent messages
+        const messages = await Message.find({
+            timestamp: { $gt: since }
+        })
+        .populate('senderId', 'name profilePic userType')
+        .populate('itemId', 'title userId');
+
+        // Format updates
+        const updates = messages.map(message => {
+            const update = {
+                type: message.parentMessageId ? 'new_reply' : 'new_message',
+                data: message.toObject()
+            };
+
+            // Add additional context for replies
+            if (message.parentMessageId) {
+                update.data.itemTitle = message.itemId.title;
+                update.data.itemUserId = message.itemId.userId;
+            }
+
+            return update;
+        });
+
+        res.json(updates);
+    } catch (error) {
+        console.error('Error fetching updates:', error);
+        res.status(500).json({ error: 'Failed to fetch updates' });
+    }
+});
+
 // Export the router
 module.exports = router; 

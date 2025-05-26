@@ -2175,6 +2175,9 @@
                 fetchEnquiries();
                 fetchListings();
                 initializeFilters();
+
+                // Initialize real-time updates
+                initializeRealTimeConnection();
             } else {
                 // Show login button and hide user profile
                 authButton.style.display = 'block';

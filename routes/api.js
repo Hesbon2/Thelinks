@@ -113,5 +113,127 @@ router.get('/user', auth, async (req, res) => {
     });
 });
 
+// Enquiry endpoints
+router.post('/enquiries', auth, async (req, res) => {
+    try {
+        const enquiry = new Enquiry({
+            ...req.body,
+            userId: req.user._id
+        });
+        await enquiry.save();
+        
+        const populatedEnquiry = await Enquiry.findById(enquiry._id).populate('userId', 'name profilePic userType');
+        res.status(201).json(populatedEnquiry);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.get('/enquiries', async (req, res) => {
+    try {
+        let query = {};
+        if (req.query.userId) {
+            query.userId = req.query.userId;
+        }
+        
+        const enquiries = await Enquiry.find(query)
+            .populate('userId', 'name profilePic userType')
+            .sort({ posted: -1 });
+        res.json(enquiries);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Property listing endpoints
+router.post('/listings', auth, async (req, res) => {
+    try {
+        const listing = new PropertyListing({
+            ...req.body,
+            userId: req.user._id
+        });
+        await listing.save();
+        
+        const populatedListing = await PropertyListing.findById(listing._id).populate('userId', 'name profilePic userType');
+        res.status(201).json(populatedListing);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.get('/listings', async (req, res) => {
+    try {
+        let query = {};
+        if (req.query.userId) {
+            query.userId = req.query.userId;
+        }
+        
+        const listings = await PropertyListing.find(query)
+            .populate('userId', 'name profilePic userType')
+            .sort({ posted: -1 });
+        res.json(listings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Bookmark endpoints
+router.post('/bookmarks', auth, async (req, res) => {
+    try {
+        const { itemId, itemType } = req.body;
+        const userId = req.user.id;
+
+        let bookmark = await Bookmark.findOne({ userId, itemId });
+
+        if (bookmark) {
+            await Bookmark.findByIdAndDelete(bookmark._id);
+            res.json({ bookmarked: false });
+        } else {
+            bookmark = new Bookmark({
+                userId,
+                itemId,
+                itemType
+            });
+            await bookmark.save();
+            res.json({ bookmarked: true });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to toggle bookmark' });
+    }
+});
+
+router.get('/bookmarks', auth, async (req, res) => {
+    try {
+        const bookmarks = await Bookmark.find({ userId: req.user.id })
+            .populate({
+                path: 'itemId',
+                populate: {
+                    path: 'userId',
+                    select: 'name userType profilePic'
+                }
+            });
+
+        const validBookmarks = bookmarks
+            .filter(bookmark => bookmark.itemId)
+            .map(bookmark => bookmark.itemId);
+
+        res.json(validBookmarks);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch bookmarks' });
+    }
+});
+
+router.get('/bookmarks/check/:itemId', auth, async (req, res) => {
+    try {
+        const bookmark = await Bookmark.findOne({
+            userId: req.user.id,
+            itemId: req.params.itemId
+        });
+        res.json({ bookmarked: !!bookmark });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to check bookmark status' });
+    }
+});
+
 // Export the router
 module.exports = router; 

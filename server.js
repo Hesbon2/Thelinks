@@ -35,8 +35,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// API Routes - Make sure these come BEFORE static file serving
-app.use('/api', require('./routes/api'));  // We'll create this in a moment
+// API Routes
+const apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
 
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));

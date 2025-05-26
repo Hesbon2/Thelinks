@@ -3326,11 +3326,16 @@
                 socket.close();
             }
 
-            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsHost = window.location.hostname === 'localhost' 
-                ? 'localhost:3000' 
-                : window.location.host;
-            socket = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
+                ? 'ws://localhost:3000/ws'
+                : 'wss://thelinks-gray.vercel.app/ws';
+            
+            try {
+                socket = new WebSocket(wsHost);
+                console.log('Attempting WebSocket connection to:', wsHost);
+            } catch (error) {
+                console.error('Error creating WebSocket connection:', error);
+            }
 
             socket.onopen = () => {
                 console.log('WebSocket connected');

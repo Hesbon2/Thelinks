@@ -1,131 +1,107 @@
 const WebSocket = require('ws');
 const jwt = require('jsonwebtoken');
-const config = require('./config');
 
 class WebSocketServer {
     constructor(server) {
         this.wss = new WebSocket.Server({ 
             server,
-            path: '/ws' // Add specific path for WebSocket
+            path: '/ws',
+            clientTracking: true
         });
-        this.clients = new Map(); // Map to store client connections with their user IDs
-        
+
+        this.clients = new Map();
+
         this.wss.on('connection', (ws) => {
-            console.log('New client connected');
-            
-            // Add ping/pong to keep connection alive
+            console.log('New WebSocket connection established');
+
             ws.isAlive = true;
             ws.on('pong', () => {
                 ws.isAlive = true;
             });
-            
+
             ws.on('message', async (message) => {
                 try {
-                    console.log('Received message:', message.toString());
                     const data = JSON.parse(message);
                     
                     if (data.type === 'auth') {
-                        await this.handleAuth(ws, data.token);
+                        const token = data.token;
+                        try {
+                            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                            ws.userId = decoded.userId;
+                            this.clients.set(decoded.userId, ws);
+                            console.log('Client authenticated:', decoded.userId);
+                        } catch (error) {
+                            console.error('Authentication error:', error);
+                            ws.close();
+                        }
                     }
                 } catch (error) {
-                    console.error('WebSocket message error:', error);
-                    ws.send(JSON.stringify({
-                        type: 'error',
-                        message: 'Invalid message format'
-                    }));
+                    console.error('Error processing message:', error);
                 }
             });
-            
+
             ws.on('close', () => {
-                // Remove client from the map when they disconnect
-                for (const [userId, client] of this.clients.entries()) {
-                    if (client === ws) {
-                        this.clients.delete(userId);
-                        console.log(`Client ${userId} disconnected`);
-                        break;
-                    }
+                if (ws.userId) {
+                    this.clients.delete(ws.userId);
+                    console.log('Client disconnected:', ws.userId);
                 }
             });
 
             ws.on('error', (error) => {
                 console.error('WebSocket error:', error);
+                if (ws.userId) {
+                    this.clients.delete(ws.userId);
+                }
             });
         });
 
-        // Set up ping interval to keep connections alive
-        const interval = setInterval(() => {
+        // Set up ping interval
+        const pingInterval = setInterval(() => {
             this.wss.clients.forEach((ws) => {
                 if (ws.isAlive === false) {
-                    console.log('Terminating inactive connection');
+                    if (ws.userId) {
+                        this.clients.delete(ws.userId);
+                    }
                     return ws.terminate();
                 }
                 
                 ws.isAlive = false;
-                ws.ping();
+                ws.ping(() => {});
             });
         }, 30000);
 
         this.wss.on('close', () => {
-            clearInterval(interval);
+            clearInterval(pingInterval);
         });
     }
-    
-    handleAuth(ws, token) {
-        try {
-            // Verify the JWT token
-            const decoded = jwt.verify(token, config.JWT_SECRET);
-            const userId = decoded.userId;
-            
-            // Store the WebSocket connection with the user ID
-            this.clients.set(userId, ws);
-            console.log(`Client ${userId} authenticated`);
-            
-            // Send confirmation to client
-            ws.send(JSON.stringify({
-                type: 'auth_success',
-                message: 'Successfully authenticated'
-            }));
-        } catch (error) {
-            console.error('Authentication error:', error);
-            ws.send(JSON.stringify({
-                type: 'auth_error',
-                message: 'Authentication failed'
-            }));
-        }
-    }
-    
-    // Send notification to a specific user
+
     notifyUser(userId, data) {
-        try {
-            const client = this.clients.get(userId.toString());
-            if (client && client.readyState === WebSocket.OPEN) {
-                console.log(`Sending notification to user ${userId}:`, data);
+        const client = this.clients.get(userId);
+        if (client && client.readyState === WebSocket.OPEN) {
+            try {
                 client.send(JSON.stringify(data));
-            } else {
-                console.log(`User ${userId} not connected or socket not open`);
+                return true;
+            } catch (error) {
+                console.error('Error sending notification to user:', error);
+                return false;
             }
-        } catch (error) {
-            console.error(`Error sending notification to user ${userId}:`, error);
         }
+        return false;
     }
-    
-    // Notify all participants in a chat
+
     notifyChat(itemId, data, excludeUserId = null) {
-        try {
-            console.log(`Broadcasting to chat ${itemId}, excluding user ${excludeUserId}`);
-            let notifiedCount = 0;
-            
-            this.clients.forEach((client, userId) => {
-                if (userId !== excludeUserId?.toString() && client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify(data));
-                    notifiedCount++;
+        this.wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN && (!excludeUserId || client.userId !== excludeUserId)) {
+                try {
+                    client.send(JSON.stringify({
+                        ...data,
+                        itemId
+                    }));
+                } catch (error) {
+                    console.error('Error broadcasting message:', error);
                 }
-            });
-            
-            console.log(`Notified ${notifiedCount} participants in chat ${itemId}`);
-        } catch (error) {
-            console.error(`Error broadcasting to chat ${itemId}:`, error);
-        }
+            }
+        });
     }
 }
 

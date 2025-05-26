@@ -27,7 +27,12 @@ console.log('VAPID Public Key:', vapidKeys.publicKey);
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: process.env.NODE_ENV === 'production'
+        ? ['https://thelinks-gray.vercel.app', 'https://thelinks.vercel.app']
+        : 'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
 
 // Serve static files from the public directory

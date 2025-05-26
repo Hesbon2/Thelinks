@@ -1941,9 +1941,9 @@
     <script>
         // Authentication state
         let currentUser = null;
-        const API_URL = window.location.hostname === 'localhost' 
+        const API_URL = window.location.hostname === 'localhost'
             ? 'http://localhost:3000/api'
-            : 'http://thelinks-gray.vercel.app/api';  // Replace with your actual Vercel backend URL
+            : 'https://thelinks-gray.vercel.app/api';
         let enquiries = [];
         let propertyListings = [];
 
@@ -3324,7 +3324,11 @@
                 socket.close();
             }
 
-            socket = new WebSocket(`ws://localhost:3000/ws`); // Add /ws path
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsHost = window.location.hostname === 'localhost' 
+                ? 'localhost:3000' 
+                : window.location.host;
+            socket = new WebSocket(`${wsProtocol}//${wsHost}/ws`);
 
             socket.onopen = () => {
                 console.log('WebSocket connected');
@@ -3562,7 +3566,7 @@
                 // Subscribe to push notifications
                 const subscription = await swRegistration.pushManager.subscribe({
                     userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array('BMG07hYVpvExhJ41tijF7jlHQp5FaA4hxLPH2LFgpfUJcaleBuZuFlgU9AN6SKLGXGVz39mIsKuDdJGUwZAgI-4')
+                    applicationServerKey: urlBase64ToUint8Array('BIN2_am3NxcC8bpo8UJfzSkMogqb7EGvZDE2JEsk1LyFmjZhTlWbCQSz33G3WGYESQINQo5nE3gdnhwjMVza-tU')
                 });
 
                 // Send subscription to server

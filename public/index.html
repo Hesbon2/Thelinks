@@ -1941,7 +1941,9 @@
     <script>
         // Authentication state
         let currentUser = null;
-        const API_URL = 'http://localhost:3000/api';  // Make sure this matches your server port
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000/api'
+            : 'http://thelinks-gray.vercel.app/api';  // Replace with your actual Vercel backend URL
         let enquiries = [];
         let propertyListings = [];
 

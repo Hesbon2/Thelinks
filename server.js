@@ -29,13 +29,23 @@ const app = express();
 // Middleware
 app.use(cors({
     origin: process.env.NODE_ENV === 'production'
-        ? ['https://thelinks-gray.vercel.app', 'https://thelinks.vercel.app']
+        ? [
+            'https://thelinks-gray.vercel.app',
+            'https://thelinks.vercel.app',
+            'https://thelinks-git-main-hesbonmakori.vercel.app'
+          ]
         : 'http://localhost:3000',
     credentials: true
 }));
 app.use(express.json());
 
-// API Routes
+// Debug middleware
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
+
+// API Routes - Make sure these come BEFORE static file serving
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
 
@@ -45,6 +55,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Serve service worker at the root path
 app.get('/service-worker.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'service-worker.js'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    if (err.name === 'MongoError' || err.name === 'MongooseError') {
+        return res.status(500).json({ error: 'Database connection error' });
+    }
+    res.status(500).json({ error: 'Internal server error' });
 });
 
 // Serve index.html for all non-API routes (SPA support)
@@ -63,10 +82,21 @@ const wss = new WebSocketServer(server);
 // Store WebSocket server instance globally
 app.set('wss', wss);
 
-// Connect to MongoDB
+// Connect to MongoDB with better error handling
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    .then(() => {
+        console.log('Connected to MongoDB');
+        console.log('MongoDB URI:', process.env.MONGODB_URI.replace(/\/\/[^:]+:[^@]+@/, '//<credentials>@')); // Log URI with hidden credentials
+    })
+    .catch(err => {
+        console.error('MongoDB connection error:', err);
+        console.error('Connection string:', process.env.MONGODB_URI.replace(/\/\/[^:]+:[^@]+@/, '//<credentials>@'));
+        console.error('Full error details:', {
+            name: err.name,
+            message: err.message,
+            code: err.code
+        });
+    });
 
 // Models
 const Message = require('./models/Message');
@@ -575,4 +605,6 @@ async function sendPushNotification(userId, notification) {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('API Base URL:', process.env.NODE_ENV === 'production' ? 'Production URL' : 'http://localhost:3000');
 }); 

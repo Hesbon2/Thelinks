@@ -35,6 +35,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// API Routes - Make sure these come BEFORE static file serving
+app.use('/api', require('./routes/api'));  // We'll create this in a moment
+
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -43,9 +46,11 @@ app.get('/service-worker.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'service-worker.js'));
 });
 
-// Serve index.html for all routes (SPA support)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Serve index.html for all non-API routes (SPA support)
+app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api/')) {
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    }
 });
 
 // Create HTTP server

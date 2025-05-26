@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const http = require('http');
 const path = require('path');
-const WebSocketServer = require('./websocket');
+const SocketServer = require('./websocket');
 const webpush = require('web-push');
 require('dotenv').config();
 const User = require('./models/User');
@@ -29,11 +29,7 @@ const app = express();
 // Middleware
 app.use(cors({
     origin: process.env.NODE_ENV === 'production'
-        ? [
-            'https://thelinks-gray.vercel.app',
-            'https://thelinks.vercel.app',
-            'https://thelinks-git-main-hesbonmakori.vercel.app'
-          ]
+        ? ['https://thelinks-gray.vercel.app', 'https://thelinks.vercel.app']
         : 'http://localhost:3000',
     credentials: true
 }));
@@ -76,14 +72,17 @@ app.get('*', (req, res) => {
 // Create HTTP server
 const server = http.createServer(app);
 
-// Initialize WebSocket server
-const wss = new WebSocketServer(server);
+// Initialize Socket.IO server
+const socketServer = new SocketServer(server);
 
-// Store WebSocket server instance globally
-app.set('wss', wss);
+// Store Socket.IO server instance globally
+app.set('socketServer', socketServer);
 
 // Connect to MongoDB with better error handling
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
     .then(() => {
         console.log('Connected to MongoDB');
         console.log('MongoDB URI:', process.env.MONGODB_URI.replace(/\/\/[^:]+:[^@]+@/, '//<credentials>@')); // Log URI with hidden credentials
@@ -431,17 +430,17 @@ app.post('/api/messages', auth, async (req, res) => {
         if (parentMessageId) {
             const parentMessage = await Message.findById(parentMessageId).populate('senderId');
             if (parentMessage && parentMessage.senderId._id.toString() !== userId.toString()) {
-                wss.notifyUser(parentMessage.senderId._id, notificationData);
+                socketServer.notifyUser(parentMessage.senderId._id, notificationData);
             }
         }
 
         // Always notify the item owner
         if (item.userId._id.toString() !== userId.toString()) {
-            wss.notifyUser(item.userId._id, notificationData);
+            socketServer.notifyUser(item.userId._id, notificationData);
         }
 
         // Notify other participants in the chat
-        wss.notifyChat(itemId, notificationData, userId);
+        socketServer.notifyChat(itemId, notificationData, userId);
 
         // Send the populated message in response
         res.status(201).json(message);
@@ -476,8 +475,8 @@ app.post('/api/messages/:messageId/like', auth, async (req, res) => {
             
             // Send notification only when liking, not unliking
             if (message.senderId._id.toString() !== userId.toString()) {
-                const wss = req.app.get('wss');
-                wss.notifyUser(message.senderId._id, {
+                const socketServer = req.app.get('socketServer');
+                socketServer.notifyUser(message.senderId._id, {
                     type: 'new_like',
                     message: {
                         _id: message._id,

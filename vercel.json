@@ -8,7 +8,7 @@
     ],
     "routes": [
         {
-            "src": "/ws",
+            "src": "/socket.io/(.*)",
             "dest": "server.js"
         },
         {

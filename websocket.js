@@ -81,11 +81,13 @@ class SocketServer {
     notifyChat(itemId, data, excludeUserId = null) {
         try {
             if (excludeUserId) {
-                socket.to(`chat_${itemId}`).emit('chat_message', {
+                // Broadcast to all clients in the room except the sender
+                this.io.to(`chat_${itemId}`).except(`user_${excludeUserId}`).emit('chat_message', {
                     ...data,
                     itemId
                 });
             } else {
+                // Broadcast to all clients in the room
                 this.io.to(`chat_${itemId}`).emit('chat_message', {
                     ...data,
                     itemId

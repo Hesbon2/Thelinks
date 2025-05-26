@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Property Enquiries</title>
+    <title>The Links - Property Listings</title>
+    <!-- Add Socket.IO client library -->
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <!-- Your existing scripts -->
+    <script src="/js/socket.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -2800,38 +2804,33 @@
 
         // Messaging functionality
         function startMessaging(itemId, title, description) {
-            if (!currentUser) {
-                alert('Please login to join the discussion');
-                authModal.style.display = 'flex';
-                return;
-            }
-
-            // Update chat window header
-            document.getElementById('chatItemInfo').innerHTML = `
-                <h4>${title}</h4>
-                <p>${description}</p>
-            `;
-
-            // Store current item ID
             messagingWindow.dataset.itemId = itemId;
-
-            // Show messaging window
             messagingWindow.classList.add('active');
-
-            // Show/hide login prompt based on authentication
-            const messageForm = document.getElementById('messageForm');
-            const chatLoginPrompt = document.getElementById('chatLoginPrompt');
+            messagingUserName.textContent = title;
             
-            if (currentUser) {
-                messageForm.style.display = 'flex';
-                chatLoginPrompt.style.display = 'none';
-            } else {
-                messageForm.style.display = 'none';
-                chatLoginPrompt.style.display = 'block';
+            // Join the chat room using Socket.IO
+            joinChatRoom(itemId);
+            
+            // Reset unread count for this chat
+            if (unreadMessages.has(itemId)) {
+                unreadMessages.delete(itemId);
+                updateUnreadIndicators();
             }
-
+            
             // Load messages
             loadMessages(itemId);
+        }
+
+        // Update the closeMessaging function
+        function closeMessaging() {
+            const itemId = messagingWindow.dataset.itemId;
+            if (itemId) {
+                // Leave the chat room using Socket.IO
+                leaveChatRoom(itemId);
+            }
+            messagingWindow.classList.remove('active');
+            messagesList.innerHTML = '';
+            messagingWindow.dataset.itemId = '';
         }
 
         function loadMessages(itemId) {

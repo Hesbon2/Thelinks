@@ -3336,65 +3336,76 @@
 
             // Close existing socket if any
             if (socket) {
-                socket.close();
+                socket.disconnect();
             }
 
-            const wsHost = window.location.hostname === 'localhost' 
-                ? 'ws://localhost:3000/ws'
-                : 'wss://thelinks-gray.vercel.app/ws';
+            const baseURL = window.location.hostname === 'localhost'
+                ? 'http://localhost:3000'
+                : 'https://thelinks-gray.vercel.app';
             
             try {
-                socket = new WebSocket(wsHost);
-                console.log('Attempting WebSocket connection to:', wsHost);
-            } catch (error) {
-                console.error('Error creating WebSocket connection:', error);
-            }
-
-            socket.onopen = () => {
-                console.log('WebSocket connected');
-                // Send authentication
-                socket.send(JSON.stringify({
-                    type: 'auth',
-                    token: localStorage.getItem('token')
-                }));
-                
-                // Add connection indicator
-                showNotificationToast({
-                    title: 'Connected',
-                    message: 'Real-time notifications are now active',
-                    type: 'success'
+                socket = io(baseURL, {
+                    path: '/socket.io',
+                    autoConnect: false,
+                    reconnection: true,
+                    reconnectionAttempts: 5,
+                    reconnectionDelay: 1000,
+                    transports: ['websocket', 'polling']
                 });
-            };
 
-            socket.onmessage = (event) => {
-                console.log('WebSocket message received:', event.data);
-                try {
-                    const data = JSON.parse(event.data);
+                socket.on('connect', () => {
+                    console.log('Socket.IO connected');
+                    // Send authentication
+                    socket.emit('authenticate', localStorage.getItem('token'));
+                    
+                    showNotificationToast({
+                        title: 'Connected',
+                        message: 'Real-time notifications are now active',
+                        type: 'success'
+                    });
+                });
+
+                socket.on('authenticated', (response) => {
+                    if (response.status === 'success') {
+                        console.log('Socket authenticated successfully');
+                    } else {
+                        console.error('Socket authentication failed:', response.message);
+                        socket.disconnect();
+                    }
+                });
+
+                socket.on('notification', (data) => {
+                    console.log('Socket.IO notification received:', data);
                     handleWebSocketMessage(data);
-                } catch (error) {
-                    console.error('Error parsing WebSocket message:', error);
-                }
-            };
-
-            socket.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                showNotificationToast({
-                    title: 'Connection Error',
-                    message: 'Failed to establish real-time connection',
-                    type: 'error'
                 });
-            };
 
-            socket.onclose = () => {
-                console.log('WebSocket disconnected');
-                showNotificationToast({
-                    title: 'Disconnected',
-                    message: 'Attempting to reconnect...',
-                    type: 'warning'
+                socket.on('chat_message', (data) => {
+                    console.log('Socket.IO chat message received:', data);
+                    handleWebSocketMessage(data);
                 });
-                // Attempt to reconnect after 5 seconds
-                setTimeout(initializeWebSocket, 5000);
-            };
+
+                socket.on('error', (error) => {
+                    console.error('Socket.IO error:', error);
+                    showNotificationToast({
+                        title: 'Connection Error',
+                        message: 'Failed to establish real-time connection',
+                        type: 'error'
+                    });
+                });
+
+                socket.on('disconnect', () => {
+                    console.log('Socket.IO disconnected');
+                    showNotificationToast({
+                        title: 'Disconnected',
+                        message: 'Attempting to reconnect...',
+                        type: 'warning'
+                    });
+                });
+
+                socket.connect();
+            } catch (error) {
+                console.error('Error initializing Socket.IO:', error);
+            }
         }
 
         function handleWebSocketMessage(data) {

@@ -1970,7 +1970,7 @@
 
         // Messaging functionality
         const messagingWindow = document.getElementById('messagingWindow');
-        const closeMessaging = document.getElementById('closeMessaging');
+        const closeMessagingBtn = document.getElementById('closeMessaging');
         const messagesList = document.getElementById('messagesList');
         const messageForm = document.getElementById('messageForm');
         const newMessageInput = document.getElementById('newMessageInput');
@@ -1979,9 +1979,20 @@
         const chatParticipants = document.getElementById('chatParticipants');
 
         // Close messaging window
-        closeMessaging.addEventListener('click', () => {
-            messagingWindow.classList.remove('active');
+        closeMessagingBtn.addEventListener('click', () => {
+            closeMessagingWindow();
         });
+
+        function closeMessagingWindow() {
+            const itemId = messagingWindow.dataset.itemId;
+            if (itemId) {
+                // Leave the chat room using Socket.IO
+                leaveChatRoom(itemId);
+            }
+            messagingWindow.classList.remove('active');
+            messagesList.innerHTML = '';
+            messagingWindow.dataset.itemId = '';
+        }
 
         // Modal functions
         function closeModal(modalElement) {

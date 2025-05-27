@@ -1,6 +1,36 @@
 // Socket.IO initialization
 let socket;
 
+// Add notification toast functionality
+function showNotificationToast({ title, message, type = 'info', duration = 5000 }) {
+    const container = document.getElementById('notificationsContainer');
+    if (!container) {
+        console.error('Notifications container not found');
+        return;
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `notification-toast ${type}`;
+    toast.innerHTML = `
+        <div class="notification-content">
+            <h4>${title}</h4>
+            <p>${message}</p>
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    // Remove toast after duration
+    setTimeout(() => {
+        toast.classList.add('exiting');
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.parentElement.removeChild(toast);
+            }
+        }, 300);
+    }, duration);
+}
+
 function initializeSocket() {
     const baseURL = window.location.hostname === 'localhost'
         ? 'http://localhost:3000'

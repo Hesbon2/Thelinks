@@ -3465,6 +3465,10 @@
             if (!content) return;
 
             const itemId = messagingWindow.dataset.itemId;
+            if (!itemId) {
+                alert('Invalid chat session. Please try again.');
+                return;
+            }
 
             fetch(`${API_URL}/messages`, {
                 method: 'POST',
@@ -3473,8 +3477,8 @@
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
                 body: JSON.stringify({
-                    itemId,
-                    content,
+                    itemId: itemId,
+                    content: content,
                     parentMessageId: messageId
                 })
             })
@@ -3592,6 +3596,11 @@
             if (!content) return;
 
             const itemId = messagingWindow.dataset.itemId;
+            if (!itemId) {
+                alert('Invalid chat session. Please try again.');
+                return;
+            }
+
             const submitButton = this.querySelector('button');
             submitButton.disabled = true;
 
@@ -3603,8 +3612,8 @@
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
-                        itemId,
-                        content
+                        itemId: itemId,
+                        content: content
                     })
                 });
 
@@ -4354,6 +4363,12 @@
                 return;
             }
 
+            if (!itemId) {
+                console.error('Invalid itemId provided to startMessaging');
+                alert('Cannot start chat: Invalid item');
+                return;
+            }
+
             try {
                 // If already in a chat, leave it first
                 if (currentChatItem && currentChatItem !== itemId) {
@@ -4361,6 +4376,7 @@
                 }
 
                 currentChatItem = itemId;
+                messagingWindow.dataset.itemId = itemId; // Ensure itemId is set in the dataset
 
                 // Update chat item info
                 chatItemInfo.innerHTML = `

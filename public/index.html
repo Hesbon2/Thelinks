@@ -2262,7 +2262,7 @@
                 initializeFilters();
 
                 // Initialize real-time updates
-                initializeRealTimeConnection();
+                initializeWebSocket();
             } else {
                 // Show login button and hide user profile
                 authButton.style.display = 'block';
@@ -3417,16 +3417,19 @@
                 : 'https://thelinks-gray.vercel.app';
 
             try {
+                console.log('Initializing WebSocket connection...');
                 socket = io(baseURL, {
                     path: '/socket.io',
                     autoConnect: false,
                     reconnection: true,
                     reconnectionAttempts: 5,
                     reconnectionDelay: 1000,
-                    transports: ['websocket', 'polling'],
-                    auth: {
-                        token: localStorage.getItem('token')
-                    }
+                    transports: ['websocket', 'polling']
+                });
+
+                socket.on('connect', () => {
+                    console.log('Socket connected, authenticating...');
+                    socket.emit('authenticate', localStorage.getItem('token'));
                 });
 
                 socket.on('connect', () => {

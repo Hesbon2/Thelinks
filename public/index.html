@@ -17,6 +17,7 @@
             --host-color: #914669;
             --agent-color: #1070CA;
             --customer-color: #47B881;
+            --primary-color-rgb: 255, 90, 95;
         }
 
         * {
@@ -717,15 +718,18 @@
         .message {
             margin-bottom: 15px;
             max-width: 85%;
-            clear: both;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .message.sent {
-            float: right;
+            align-items: flex-end;
+            margin-left: auto;
         }
 
         .message.received {
-            float: left;
+            align-items: flex-start;
         }
 
         .message-content {
@@ -735,18 +739,47 @@
             line-height: 1.4;
             word-wrap: break-word;
             max-width: 100%;
+            position: relative;
         }
 
         .message.received .message-content {
             background: white;
             border: 1px solid #e2e8f0;
             border-bottom-left-radius: 4px;
+            margin-left: 40px;
         }
 
         .message.sent .message-content {
             background: var(--primary-color);
             color: white;
             border-bottom-right-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .message.reply {
+            margin-left: 40px;
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .message.sent.reply {
+            margin-right: 40px;
+        }
+
+        .message-user-pic {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            position: absolute;
+            left: -40px;
+            bottom: 0;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.sent .message-user-pic {
+            display: none;
         }
 
         .message-time {
@@ -1920,6 +1953,134 @@
 
         .message {
             position: relative;
+        }
+
+        /* Message Actions Styles */
+        .message-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            padding: 0 8px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+
+        .message.sent .message-actions {
+            justify-content: flex-end;
+        }
+
+        .message-action {
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            user-select: none;
+            background: none;
+            border: none;
+        }
+
+        .message-action:hover {
+            color: var(--primary-color);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .message-action.liked {
+            color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.1);
+        }
+
+        .message-action.disliked {
+            color: #E12D39;
+            background: rgba(225, 45, 57, 0.1);
+        }
+
+        .message-action i {
+            font-size: 14px;
+        }
+
+        .message-action .count {
+            font-weight: 600;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .message-reactions {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+            padding: 0 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            opacity: 0.8;
+        }
+
+        .message.sent .message-reactions {
+            align-items: flex-end;
+        }
+
+        .message-reactions .likes {
+            color: var(--primary-color);
+        }
+
+        .message-reactions .dislikes {
+            color: #E12D39;
+        }
+
+        /* Reply Form Styles */
+        .reply-form {
+            display: none;
+            margin-top: 8px;
+            padding: 0 8px;
+        }
+
+        .reply-form.active {
+            display: block;
+        }
+
+        .reply-input-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 6px 12px;
+        }
+
+        .reply-input-container input {
+            flex: 1;
+            border: none;
+            background: none;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+
+        .reply-input-container input:focus {
+            outline: none;
+        }
+
+        .reply-send-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .reply-send-btn:hover {
+            background: rgba(var(--primary-color-rgb), 0.1);
         }
     </style>
 </head>
@@ -3530,9 +3691,24 @@
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update like');
+                return response.json();
+            })
             .then(message => {
-                updateMessageReactions(messageId, message);
+                const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+                if (!messageElement) return;
+
+                const likeButton = messageElement.querySelector('.message-action:nth-child(2)');
+                const likeCount = likeButton.querySelector('.count');
+                const reactionsDiv = messageElement.querySelector('.message-reactions');
+
+                // Update like button state
+                likeButton.classList.toggle('liked', message.likes.includes(currentUser.id));
+                likeCount.textContent = message.likes.length;
+
+                // Update reactions display
+                updateMessageReactions(messageElement, message);
             })
             .catch(error => {
                 console.error('Error updating like:', error);
@@ -3553,9 +3729,24 @@
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update dislike');
+                return response.json();
+            })
             .then(message => {
-                updateMessageReactions(messageId, message);
+                const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+                if (!messageElement) return;
+
+                const dislikeButton = messageElement.querySelector('.message-action:nth-child(3)');
+                const dislikeCount = dislikeButton.querySelector('.count');
+                const reactionsDiv = messageElement.querySelector('.message-reactions');
+
+                // Update dislike button state
+                dislikeButton.classList.toggle('disliked', message.dislikes.includes(currentUser.id));
+                dislikeCount.textContent = message.dislikes.length;
+
+                // Update reactions display
+                updateMessageReactions(messageElement, message);
             })
             .catch(error => {
                 console.error('Error updating dislike:', error);
@@ -3563,31 +3754,29 @@
             });
         }
 
-        function updateMessageReactions(messageId, message) {
-            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-            const likeAction = messageElement.querySelector('.message-action:nth-child(2)');
-            const dislikeAction = messageElement.querySelector('.message-action:nth-child(3)');
-            const likeCount = likeAction.querySelector('.like-count');
-            const dislikeCount = dislikeAction.querySelector('.dislike-count');
+        function updateMessageReactions(messageElement, message) {
             const reactionsDiv = messageElement.querySelector('.message-reactions');
+            const hasReactions = (message.likes?.length > 0 || message.dislikes?.length > 0);
 
-            // Update counts
-            likeCount.textContent = message.likes.length;
-            dislikeCount.textContent = message.dislikes?.length || 0;
-
-            // Update action states
-            likeAction.classList.toggle('liked', message.likes.includes(currentUser.id));
-            dislikeAction.classList.toggle('disliked', message.dislikes?.includes(currentUser.id));
-
-            // Update reactions text
-            let reactionsHtml = '';
-            if (message.likes.length > 0) {
-                reactionsHtml += `<div class="likes">Liked by ${message.likes.map(user => user.name).join(', ')}</div>`;
+            if (hasReactions) {
+                let reactionsHtml = '';
+                if (message.likes?.length > 0) {
+                    reactionsHtml += `
+                        <div class="likes">
+                            <i class="fas fa-heart"></i> ${message.likes.length} ${message.likes.length === 1 ? 'like' : 'likes'}
+                        </div>`;
+                }
+                if (message.dislikes?.length > 0) {
+                    reactionsHtml += `
+                        <div class="dislikes">
+                            <i class="fas fa-thumbs-down"></i> ${message.dislikes.length} ${message.dislikes.length === 1 ? 'dislike' : 'dislikes'}
+                        </div>`;
+                }
+                reactionsDiv.innerHTML = reactionsHtml;
+                reactionsDiv.style.display = 'flex';
+            } else {
+                reactionsDiv.style.display = 'none';
             }
-            if (message.dislikes?.length > 0) {
-                reactionsHtml += `<div class="dislikes">Disliked by ${message.dislikes.map(user => user.name).join(', ')}</div>`;
-            }
-            reactionsDiv.innerHTML = reactionsHtml;
         }
 
         // Add message form submit handler

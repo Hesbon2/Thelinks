@@ -997,6 +997,16 @@
             font-size: 14px;
         }
 
+        .error-message {
+            text-align: center;
+            padding: 20px;
+            color: var(--primary-color);
+            background-color: rgba(255, 90, 95, 0.1);
+            border-radius: 8px;
+            margin: 10px;
+            font-size: 14px;
+        }
+
         .user-menu img {
             width: 40px;
             height: 40px;
@@ -4025,18 +4035,61 @@
             });
         }
 
-        // Extend the existing startMessaging function
-        const baseStartMessaging = window.startMessaging;
+        // Global startMessaging function
         window.startMessaging = function(itemId, title, description) {
-            // Call the original function first
-            if (baseStartMessaging) {
-                baseStartMessaging(itemId, title, description);
+            if (!currentUser) {
+                alert('Please login to join the discussion');
+                authModal.style.display = 'flex';
+                return;
             }
 
-            // Add our new functionality
+            const messagingWindow = document.getElementById('messagingWindow');
+            const messagesList = document.getElementById('messagesList');
+            const chatItemInfo = document.getElementById('chatItemInfo');
+
+            // Update chat item info
+            chatItemInfo.innerHTML = `
+                <h4>${title}</h4>
+                <p>${description}</p>
+            `;
+
+            // Set the current item ID and show the window
+            messagingWindow.dataset.itemId = itemId;
+            messagingWindow.classList.add('active');
+
+            // Clear existing messages
+            messagesList.innerHTML = '';
+
+            // Load messages for this item
+            fetch(`${API_URL}/messages/${itemId}`)
+                .then(response => response.json())
+                .then(messages => {
+                    messages.forEach(message => {
+                        addMessageToChat(message);
+                        // Add replies if any
+                        if (message.replies && message.replies.length > 0) {
+                            message.replies.forEach(reply => {
+                                addMessageToChat(reply, true);
+                            });
+                        }
+                    });
+                    // Scroll to bottom
+                    messagesList.scrollTop = messagesList.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error loading messages:', error);
+                    messagesList.innerHTML = '<div class="error-message">Failed to load messages. Please try again.</div>';
+                });
+
+            // Clear unread messages for this item
             if (unreadMessages.has(itemId)) {
                 unreadMessages.delete(itemId);
                 updateUnreadIndicators();
+            }
+
+            // Join the chat room
+            if (socket && socket.connected) {
+                socket.emit('join_room', { itemId });
             }
         };
 

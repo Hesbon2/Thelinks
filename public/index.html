@@ -563,13 +563,36 @@
                 max-height: 100vh;
                 bottom: 0;
                 right: 0;
+                left: 0;
                 border-radius: 0;
                 transform: translateY(100%);
                 opacity: 1;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                will-change: transform;
             }
 
             .chat-window.active {
                 transform: translateY(0);
+            }
+
+            .chat-window.dragging {
+                transition: none;
+            }
+
+            .chat-window::after {
+                content: '';
+                position: absolute;
+                top: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 4px;
+                background: #e2e8f0;
+                border-radius: 2px;
+            }
+
+            .chat-header {
+                padding-top: 24px !important;
             }
         }
 
@@ -4258,6 +4281,50 @@
         const chatItemInfo = document.getElementById('chatItemInfo');
         const closeChat = document.getElementById('closeMessaging');
         const chatLoginPrompt = document.getElementById('chatLoginPrompt');
+
+        // Touch handling for mobile swipe-to-close
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        let isDragging = false;
+
+        function handleTouchStart(e) {
+            if (window.innerWidth > 768) return;
+            touchStartY = e.touches[0].clientY;
+            touchCurrentY = touchStartY;
+            isDragging = true;
+            messagingWindow.classList.add('dragging');
+        }
+
+        function handleTouchMove(e) {
+            if (!isDragging) return;
+            touchCurrentY = e.touches[0].clientY;
+            const deltaY = touchCurrentY - touchStartY;
+            
+            if (deltaY < 0) return; // Prevent upward dragging
+            
+            const transform = `translateY(${deltaY}px)`;
+            messagingWindow.style.transform = transform;
+        }
+
+        function handleTouchEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            messagingWindow.classList.remove('dragging');
+            
+            const deltaY = touchCurrentY - touchStartY;
+            if (deltaY > 100) {
+                // Close the chat if dragged down more than 100px
+                messagingWindow.classList.remove('active');
+                messagingWindow.style.transform = '';
+            } else {
+                // Reset position if not dragged enough
+                messagingWindow.style.transform = '';
+            }
+        }
+
+        messagingWindow.addEventListener('touchstart', handleTouchStart);
+        messagingWindow.addEventListener('touchmove', handleTouchMove);
+        messagingWindow.addEventListener('touchend', handleTouchEnd);
 
         // Close chat window handler
         closeChat.addEventListener('click', () => {

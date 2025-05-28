@@ -2131,11 +2131,17 @@
                 localStorage.setItem('token', data.token);
                 currentUser = data.user;
                 
-                // Initialize WebSocket after successful login
-                initializeWebSocket();
-                
-                // Update UI
+                // Update UI first
                 updateUIForUser();
+                
+                // Initialize WebSocket after UI update
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
+                    initializeWebSocket();
+                } catch (wsError) {
+                    console.error('WebSocket initialization error:', wsError);
+                    // Continue even if WebSocket fails
+                }
                 authModal.style.display = 'none';
                 loginForm.reset();
                 
@@ -2158,6 +2164,7 @@
 
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitButton = registerForm.querySelector('button[type="submit"]');
             const formData = {
                 name: document.getElementById('registerName').value,
                 email: document.getElementById('registerEmail').value,
@@ -2168,10 +2175,15 @@
             };
 
             try {
+                // Disable the submit button
+                submitButton.disabled = true;
+                submitButton.textContent = 'Creating Account...';
+
                 const response = await fetch(`${API_URL}/register`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify(formData)
                 });
@@ -2179,18 +2191,48 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error);
+                    throw new Error(data.error || 'Registration failed');
                 }
 
                 // Store token and user data
                 localStorage.setItem('token', data.token);
                 currentUser = data.user;
+                
+                // Update UI first
                 updateUIForUser();
+                
+                // Initialize WebSocket after UI update
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
+                    initializeWebSocket();
+                } catch (wsError) {
+                    console.error('WebSocket initialization error:', wsError);
+                    // Continue even if WebSocket fails
+                }
+                
                 authModal.style.display = 'none';
                 registerForm.reset();
+                
+                // Show success message
+                showNotificationToast({
+                    title: 'Welcome!',
+                    message: `Account created successfully for ${currentUser.name}`,
+                    type: 'success'
+                });
             } catch (error) {
-                registerError.textContent = error.message;
+                console.error('Registration error:', error);
+                registerError.textContent = error.message || 'Failed to create account. Please try again.';
                 registerError.style.display = 'block';
+                
+                showNotificationToast({
+                    title: 'Registration Failed',
+                    message: error.message || 'Failed to create account',
+                    type: 'error'
+                });
+            } finally {
+                // Re-enable the submit button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Create Account';
             }
         });
 
@@ -3417,19 +3459,33 @@
                 : 'https://thelinks-gray.vercel.app';
 
             try {
-                console.log('Initializing WebSocket connection...');
+                console.log('Initializing WebSocket connection...', { baseURL });
                 socket = io(baseURL, {
                     path: '/socket.io',
-                    autoConnect: false,
+                    autoConnect: true,
                     reconnection: true,
                     reconnectionAttempts: 5,
                     reconnectionDelay: 1000,
-                    transports: ['websocket', 'polling']
+                    transports: ['polling', 'websocket'],
+                    auth: {
+                        token: localStorage.getItem('token')
+                    }
                 });
 
                 socket.on('connect', () => {
-                    console.log('Socket connected, authenticating...');
-                    socket.emit('authenticate', localStorage.getItem('token'));
+                    console.log('Socket connected successfully');
+                });
+
+                socket.on('connect_error', (error) => {
+                    console.error('Socket connection error:', error);
+                });
+
+                socket.on('error', (error) => {
+                    console.error('Socket error:', error);
+                });
+
+                socket.on('disconnect', (reason) => {
+                    console.log('Socket disconnected:', reason);
                 });
 
                 socket.on('connect', () => {

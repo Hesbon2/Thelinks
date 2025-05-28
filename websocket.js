@@ -12,54 +12,80 @@ class SocketServer {
                 credentials: true
             },
             path: '/socket.io',
-            transports: ['websocket', 'polling'],
+            transports: ['polling', 'websocket'],
             allowEIO3: true,
             pingTimeout: 60000,
-            pingInterval: 25000
+            pingInterval: 25000,
+            cookie: {
+                name: 'io',
+                httpOnly: true,
+                sameSite: 'strict'
+            }
         });
 
         this.clients = new Map();
 
+        this.io.use(async (socket, next) => {
+            try {
+                const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
+                if (!token) {
+                    return next(new Error('Authentication token missing'));
+                }
+
+                const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
+                socket.userId = decoded.userId;
+                next();
+            } catch (error) {
+                next(new Error('Authentication failed'));
+            }
+        });
+
         this.io.on('connection', (socket) => {
             console.log('New Socket.IO connection:', socket.id);
 
-            socket.on('authenticate', async (token) => {
-                try {
-                    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                    socket.userId = decoded.userId;
-                    this.clients.set(decoded.userId, socket);
-                    console.log('Client authenticated:', decoded.userId);
-
-                    // Join a room specific to this user
-                    socket.join(`user_${decoded.userId}`);
-                    
-                    socket.emit('authenticated', { status: 'success' });
-                } catch (error) {
-                    console.error('Authentication error:', error);
-                    socket.emit('authenticated', { 
-                        status: 'error',
-                        message: 'Authentication failed'
-                    });
-                    socket.disconnect();
-                }
-            });
+            // Join user's personal room
+            if (socket.userId) {
+                socket.join(`user_${socket.userId}`);
+                this.clients.set(socket.userId, socket);
+                console.log('Client authenticated:', socket.userId);
+                socket.emit('authenticated', { status: 'success' });
+            }
 
             socket.on('join_chat', (itemId) => {
-                if (socket.userId) {
+                try {
+                    if (!socket.userId) {
+                        throw new Error('Not authenticated');
+                    }
+                    if (!itemId) {
+                        throw new Error('Invalid chat room');
+                    }
                     socket.join(`chat_${itemId}`);
                     console.log(`User ${socket.userId} joined chat ${itemId}`);
+                    socket.emit('chat_joined', { status: 'success', itemId });
+                } catch (error) {
+                    console.error('Join chat error:', error);
+                    socket.emit('error', { message: error.message });
                 }
             });
 
             socket.on('leave_chat', (itemId) => {
-                socket.leave(`chat_${itemId}`);
-                console.log(`User ${socket.userId} left chat ${itemId}`);
+                try {
+                    if (!itemId) {
+                        throw new Error('Invalid chat room');
+                    }
+                    socket.leave(`chat_${itemId}`);
+                    console.log(`User ${socket.userId} left chat ${itemId}`);
+                    socket.emit('chat_left', { status: 'success', itemId });
+                } catch (error) {
+                    console.error('Leave chat error:', error);
+                    socket.emit('error', { message: error.message });
+                }
             });
 
-            socket.on('disconnect', () => {
+            socket.on('disconnect', (reason) => {
                 if (socket.userId) {
                     this.clients.delete(socket.userId);
-                    console.log('Client disconnected:', socket.userId);
+                    console.log('Client disconnected:', socket.userId, 'Reason:', reason);
                 }
             });
 
@@ -74,6 +100,9 @@ class SocketServer {
 
     notifyUser(userId, data) {
         try {
+            if (!userId || !data) {
+                throw new Error('Invalid notification parameters');
+            }
             this.io.to(`user_${userId}`).emit('notification', data);
             return true;
         } catch (error) {
@@ -84,21 +113,24 @@ class SocketServer {
     
     notifyChat(itemId, data, excludeUserId = null) {
         try {
+            if (!itemId || !data) {
+                throw new Error('Invalid chat notification parameters');
+            }
             if (excludeUserId) {
-                // Broadcast to all clients in the room except the sender
                 this.io.to(`chat_${itemId}`).except(`user_${excludeUserId}`).emit('chat_message', {
                     ...data,
                     itemId
                 });
             } else {
-                // Broadcast to all clients in the room
                 this.io.to(`chat_${itemId}`).emit('chat_message', {
                     ...data,
                     itemId
                 });
             }
+            return true;
         } catch (error) {
             console.error('Error broadcasting message:', error);
+            return false;
         }
     }
 }

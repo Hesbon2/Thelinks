@@ -532,24 +532,27 @@
         /* Chat Window Styles */
         .chat-window {
             position: fixed;
-            top: 0;
-            right: -400px;
+            bottom: 20px;
+            right: 20px;
             width: 400px;
-            height: 100vh;
+            height: 600px;
             background: white;
-            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
-            transition: right 0.3s ease;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
             display: flex;
             flex-direction: column;
             z-index: 1000;
+            overflow: hidden;
         }
 
         .chat-window.active {
-            right: 0;
+            transform: translateX(0);
         }
 
         .chat-header {
-            padding: 20px;
+            padding: 15px 20px;
             background: var(--primary-color);
             color: white;
             display: flex;
@@ -561,6 +564,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+            padding: 0;
+        }
+
+        .close-chat:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .chat-participants {
@@ -4035,63 +4058,165 @@
             });
         }
 
+        // Chat functionality
+        let currentChatItem = null;
+        let isLoadingMessages = false;
+        let lastMessageTimestamp = null;
+
+        // Initialize chat elements
+        const chatItemInfo = document.getElementById('chatItemInfo');
+        const closeChat = document.getElementById('closeMessaging');
+        const chatLoginPrompt = document.getElementById('chatLoginPrompt');
+
+        // Close chat window handler
+        closeChat.addEventListener('click', () => {
+            messagingWindow.classList.remove('active');
+            if (currentChatItem) {
+                leaveCurrentChat();
+            }
+        });
+
+        // Handle chat window closing when clicking outside
+        document.addEventListener('click', (e) => {
+            if (messagingWindow.classList.contains('active') && 
+                !messagingWindow.contains(e.target) && 
+                !e.target.closest('.action-btn.reply')) {
+                messagingWindow.classList.remove('active');
+                if (currentChatItem) {
+                    leaveCurrentChat();
+                }
+            }
+        });
+
         // Global startMessaging function
-        window.startMessaging = function(itemId, title, description) {
+        window.startMessaging = async function(itemId, title, description) {
             if (!currentUser) {
                 alert('Please login to join the discussion');
                 authModal.style.display = 'flex';
                 return;
             }
 
-            const messagingWindow = document.getElementById('messagingWindow');
-            const messagesList = document.getElementById('messagesList');
-            const chatItemInfo = document.getElementById('chatItemInfo');
+            try {
+                // If already in a chat, leave it first
+                if (currentChatItem && currentChatItem !== itemId) {
+                    leaveCurrentChat();
+                }
 
-            // Update chat item info
-            chatItemInfo.innerHTML = `
-                <h4>${title}</h4>
-                <p>${description}</p>
-            `;
+                currentChatItem = itemId;
 
-            // Set the current item ID and show the window
-            messagingWindow.dataset.itemId = itemId;
-            messagingWindow.classList.add('active');
+                // Update chat item info
+                chatItemInfo.innerHTML = `
+                    <h4>${title}</h4>
+                    <p>${description}</p>
+                `;
 
-            // Clear existing messages
-            messagesList.innerHTML = '';
+                // Show appropriate UI elements
+                messagingWindow.classList.add('active');
+                messageForm.style.display = 'flex';
+                chatLoginPrompt.style.display = 'none';
+                
+                // Clear and load messages
+                messagesList.innerHTML = '<div class="loading-messages">Loading messages...</div>';
+                await loadMessages(itemId);
 
-            // Load messages for this item
-            fetch(`${API_URL}/messages/${itemId}`)
-                .then(response => response.json())
-                .then(messages => {
-                    messages.forEach(message => {
-                        addMessageToChat(message);
-                        // Add replies if any
-                        if (message.replies && message.replies.length > 0) {
-                            message.replies.forEach(reply => {
-                                addMessageToChat(reply, true);
-                            });
-                        }
+                // Join chat room
+                if (socket && socket.connected) {
+                    socket.emit('join_room', { 
+                        itemId,
+                        userId: currentUser.id,
+                        timestamp: new Date().toISOString()
                     });
-                    // Scroll to bottom
-                    messagesList.scrollTop = messagesList.scrollHeight;
-                })
-                .catch(error => {
-                    console.error('Error loading messages:', error);
-                    messagesList.innerHTML = '<div class="error-message">Failed to load messages. Please try again.</div>';
-                });
+                }
 
-            // Clear unread messages for this item
-            if (unreadMessages.has(itemId)) {
-                unreadMessages.delete(itemId);
-                updateUnreadIndicators();
-            }
+                // Clear unread messages
+                if (unreadMessages.has(itemId)) {
+                    unreadMessages.delete(itemId);
+                    updateUnreadIndicators();
+                }
 
-            // Join the chat room
-            if (socket && socket.connected) {
-                socket.emit('join_room', { itemId });
+                // Mark messages as read
+                fetch(`${API_URL}/messages/${itemId}/read`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }).catch(error => console.error('Error marking messages as read:', error));
+
+            } catch (error) {
+                console.error('Error starting chat:', error);
+                messagesList.innerHTML = '<div class="error-message">Failed to load chat. Please try again.</div>';
             }
         };
+
+        async function loadMessages(itemId, before = null) {
+            if (isLoadingMessages) return;
+            isLoadingMessages = true;
+
+            try {
+                let url = `${API_URL}/messages/${itemId}`;
+                if (before) {
+                    url += `?before=${before}`;
+                }
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load messages');
+
+                const messages = await response.json();
+                
+                if (!before) {
+                    messagesList.innerHTML = '';
+                }
+
+                messages.forEach(message => {
+                    addMessageToChat(message, false, before ? 'prepend' : 'append');
+                    if (message.replies && message.replies.length > 0) {
+                        message.replies.forEach(reply => {
+                            addMessageToChat(reply, true, before ? 'prepend' : 'append');
+                        });
+                    }
+                });
+
+                if (messages.length > 0) {
+                    lastMessageTimestamp = messages[0].timestamp;
+                }
+
+                if (!before) {
+                    messagesList.scrollTop = messagesList.scrollHeight;
+                }
+
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                if (!before) {
+                    messagesList.innerHTML = '<div class="error-message">Failed to load messages. Please try again.</div>';
+                }
+            } finally {
+                isLoadingMessages = false;
+            }
+        }
+
+        function leaveCurrentChat() {
+            if (currentChatItem && socket && socket.connected) {
+                socket.emit('leave_room', { 
+                    itemId: currentChatItem,
+                    userId: currentUser.id,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            currentChatItem = null;
+            lastMessageTimestamp = null;
+        }
+
+        // Add scroll handler for loading more messages
+        messagesList.addEventListener('scroll', () => {
+            if (messagesList.scrollTop === 0 && !isLoadingMessages && lastMessageTimestamp) {
+                loadMessages(currentChatItem, lastMessageTimestamp);
+            }
+        });
 
         // Extend the existing updateUIForUser function
         const baseUpdateUIForUser = window.updateUIForUser;

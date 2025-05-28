@@ -31,12 +31,22 @@ const messageSchema = new mongoose.Schema({
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    }],
+    dislikes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    readBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }]
 });
 
 // Add indexes for better query performance
-messageSchema.index({ itemId: 1, timestamp: 1 });
+messageSchema.index({ itemId: 1, timestamp: -1 });
 messageSchema.index({ parentMessageId: 1 });
+messageSchema.index({ senderId: 1 });
+messageSchema.index({ readBy: 1 });
 
 const Message = mongoose.model('Message', messageSchema);
 

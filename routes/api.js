@@ -271,5 +271,144 @@ router.get('/updates', auth, async (req, res) => {
     }
 });
 
+// Message endpoints
+router.get('/messages/:itemId', auth, async (req, res) => {
+    try {
+        const { itemId } = req.params;
+        const { before } = req.query;
+        const limit = 50;
+
+        let query = { itemId };
+        if (before) {
+            query.timestamp = { $lt: new Date(before) };
+        }
+
+        const messages = await Message.find(query)
+            .populate('senderId', 'name profilePic userType')
+            .populate('replies')
+            .sort({ timestamp: -1 })
+            .limit(limit);
+
+        res.json(messages);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
+router.post('/messages', auth, async (req, res) => {
+    try {
+        const { itemId, content, parentMessageId } = req.body;
+        const message = new Message({
+            senderId: req.user._id,
+            itemId,
+            content,
+            parentMessageId
+        });
+
+        await message.save();
+
+        if (parentMessageId) {
+            await Message.findByIdAndUpdate(parentMessageId, {
+                $push: { replies: message._id }
+            });
+        }
+
+        const populatedMessage = await Message.findById(message._id)
+            .populate('senderId', 'name profilePic userType');
+
+        // Notify through WebSocket
+        req.app.get('socketServer').notifyChat(itemId, {
+            type: parentMessageId ? 'new_reply' : 'new_message',
+            message: populatedMessage
+        }, req.user._id);
+
+        res.status(201).json(populatedMessage);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.post('/messages/:messageId/like', auth, async (req, res) => {
+    try {
+        const message = await Message.findById(req.params.messageId);
+        if (!message) {
+            return res.status(404).json({ error: 'Message not found' });
+        }
+
+        const userLiked = message.likes.includes(req.user._id);
+        const update = userLiked
+            ? { $pull: { likes: req.user._id } }
+            : { $addToSet: { likes: req.user._id } };
+
+        const updatedMessage = await Message.findByIdAndUpdate(
+            req.params.messageId,
+            update,
+            { new: true }
+        ).populate('senderId', 'name profilePic userType');
+
+        if (!userLiked) {
+            req.app.get('socketServer').notifyUser(message.senderId, {
+                type: 'new_like',
+                message: {
+                    ...updatedMessage.toObject(),
+                    likedBy: {
+                        _id: req.user._id,
+                        name: req.user.name,
+                        profilePic: req.user.profilePic
+                    }
+                }
+            });
+        }
+
+        res.json(updatedMessage);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update like' });
+    }
+});
+
+router.post('/messages/:messageId/dislike', auth, async (req, res) => {
+    try {
+        const message = await Message.findById(req.params.messageId);
+        if (!message) {
+            return res.status(404).json({ error: 'Message not found' });
+        }
+
+        const userDisliked = message.dislikes?.includes(req.user._id);
+        const update = userDisliked
+            ? { $pull: { dislikes: req.user._id } }
+            : { $addToSet: { dislikes: req.user._id } };
+
+        const updatedMessage = await Message.findByIdAndUpdate(
+            req.params.messageId,
+            update,
+            { new: true }
+        ).populate('senderId', 'name profilePic userType');
+
+        res.json(updatedMessage);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update dislike' });
+    }
+});
+
+router.post('/messages/:itemId/read', auth, async (req, res) => {
+    try {
+        const { itemId } = req.params;
+        
+        // Mark all messages in this chat as read for the current user
+        await Message.updateMany(
+            { 
+                itemId,
+                senderId: { $ne: req.user._id },
+                readBy: { $ne: req.user._id }
+            },
+            { $addToSet: { readBy: req.user._id } }
+        );
+
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to mark messages as read' });
+    }
+});
+
 // Export the router
 module.exports = router; 

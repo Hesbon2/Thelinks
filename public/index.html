@@ -597,7 +597,7 @@
         }
 
         .chat-header {
-            padding: 15px 20px;
+            padding: 20px;
             background: var(--primary-color);
             color: white;
             display: flex;
@@ -608,43 +608,53 @@
 
         .chat-header-top {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            padding-right: 40px; /* Space for close button */
         }
 
         .chat-header-top h3 {
             margin: 0;
             font-size: 18px;
             font-weight: 600;
+            line-height: 1.4;
         }
 
         .close-chat {
+            position: absolute;
+            top: 12px;
+            right: 12px;
             background: none;
             border: none;
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: background-color 0.3s;
+            transition: all 0.2s ease;
             padding: 0;
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+            z-index: 2;
         }
 
         .close-chat:hover {
             background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .close-chat:active {
+            transform: scale(0.95);
         }
 
         @media (max-width: 768px) {
             .chat-header {
-                padding: 15px 50px 15px 20px;
+                padding: 24px 20px 16px;
+            }
+
+            .chat-header-top {
+                padding-right: 36px;
             }
 
             .chat-header-top h3 {
@@ -652,9 +662,11 @@
             }
 
             .close-chat {
-                width: 36px;
-                height: 36px;
-                font-size: 20px;
+                top: 16px;
+                right: 16px;
+                width: 28px;
+                height: 28px;
+                font-size: 18px;
             }
         }
 

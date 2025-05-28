@@ -1247,11 +1247,35 @@
             color: var(--primary-color);
         }
 
-        .message-likes {
+        .message-action.disliked {
+            color: #E12D39;
+        }
+
+        .message-reactions {
             font-size: 13px;
             color: #666;
             margin-top: 5px;
             padding-left: 42px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .message-reactions .likes {
+            color: var(--primary-color);
+        }
+
+        .message-reactions .dislikes {
+            color: #E12D39;
+        }
+
+        .message-action i.fa-thumbs-down {
+            transform: scale(0.9);
+            transition: transform 0.2s ease;
+        }
+
+        .message-action.disliked i.fa-thumbs-down {
+            transform: scale(1.1);
         }
 
         .reply-form {
@@ -3249,20 +3273,62 @@
             })
             .then(response => response.json())
             .then(message => {
-                const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-                const likeAction = messageElement.querySelector('.message-action:last-child');
-                const likeCount = likeAction.querySelector('.like-count');
-                const likesText = messageElement.querySelector('.message-likes');
-
-                likeCount.textContent = message.likes.length;
-                likeAction.classList.toggle('liked', message.likes.includes(currentUser.id));
-                likesText.textContent = message.likes.length > 0 ?
-                    `Liked by ${message.likes.map(user => user.name).join(', ')}` : '';
+                updateMessageReactions(messageId, message);
             })
             .catch(error => {
                 console.error('Error updating like:', error);
                 alert('Failed to update like. Please try again.');
             });
+        }
+
+        function toggleDislike(messageId) {
+            if (!currentUser) {
+                alert('Please login to dislike messages');
+                authModal.style.display = 'flex';
+                return;
+            }
+
+            fetch(`${API_URL}/messages/${messageId}/dislike`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then(response => response.json())
+            .then(message => {
+                updateMessageReactions(messageId, message);
+            })
+            .catch(error => {
+                console.error('Error updating dislike:', error);
+                alert('Failed to update dislike. Please try again.');
+            });
+        }
+
+        function updateMessageReactions(messageId, message) {
+            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+            const likeAction = messageElement.querySelector('.message-action:nth-child(2)');
+            const dislikeAction = messageElement.querySelector('.message-action:nth-child(3)');
+            const likeCount = likeAction.querySelector('.like-count');
+            const dislikeCount = dislikeAction.querySelector('.dislike-count');
+            const reactionsDiv = messageElement.querySelector('.message-reactions');
+
+            // Update counts
+            likeCount.textContent = message.likes.length;
+            dislikeCount.textContent = message.dislikes?.length || 0;
+
+            // Update action states
+            likeAction.classList.toggle('liked', message.likes.includes(currentUser.id));
+            dislikeAction.classList.toggle('disliked', message.dislikes?.includes(currentUser.id));
+
+            // Update reactions text
+            let reactionsHtml = '';
+            if (message.likes.length > 0) {
+                reactionsHtml += `<div class="likes">Liked by ${message.likes.map(user => user.name).join(', ')}</div>`;
+            }
+            if (message.dislikes?.length > 0) {
+                reactionsHtml += `<div class="dislikes">Disliked by ${message.dislikes.map(user => user.name).join(', ')}</div>`;
+            }
+            reactionsDiv.innerHTML = reactionsHtml;
         }
 
         // Add message form submit handler

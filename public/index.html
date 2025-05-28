@@ -532,34 +532,40 @@
         /* Chat Window Styles */
         .chat-window {
             position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            max-width: 400px;
+            bottom: 20px;
+            right: 20px;
+            width: 380px;
+            height: 600px;
+            max-height: calc(100vh - 40px);
             background: white;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
-            transform: translateX(120%);
-            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+            border-radius: 12px;
+            transform: scale(0.5);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
             display: flex;
             flex-direction: column;
             z-index: 1000;
             overflow: hidden;
+            pointer-events: none;
         }
 
         .chat-window.active {
-            transform: translateX(0);
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: all;
         }
 
         @media (max-width: 768px) {
             .chat-window {
-                max-width: 100%;
                 width: 100%;
-                height: 100%;
+                height: 100vh;
+                max-height: 100vh;
                 bottom: 0;
                 right: 0;
                 border-radius: 0;
                 transform: translateY(100%);
+                opacity: 1;
             }
 
             .chat-window.active {
@@ -1383,18 +1389,38 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            user-select: none;
         }
 
         .message-action:hover {
-            color: var(--primary-color);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .message-action:active {
+            transform: scale(0.95);
+        }
+
+        .message-action i {
+            transition: transform 0.2s ease;
         }
 
         .message-action.liked {
             color: var(--primary-color);
         }
 
+        .message-action.liked i {
+            transform: scale(1.2);
+        }
+
         .message-action.disliked {
             color: #E12D39;
+        }
+
+        .message-action.disliked i {
+            transform: scale(1.2);
         }
 
         .message-reactions {
@@ -1405,14 +1431,55 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            opacity: 0;
+            height: 0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .message-reactions.active {
+            opacity: 1;
+            height: auto;
+            margin-top: 8px;
         }
 
         .message-reactions .likes {
             color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .message-reactions .likes i {
+            font-size: 12px;
         }
 
         .message-reactions .dislikes {
             color: #E12D39;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .message-reactions .dislikes i {
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .message-actions {
+                padding-left: 36px;
+                gap: 10px;
+            }
+
+            .message-action {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+
+            .message-reactions {
+                padding-left: 36px;
+                font-size: 12px;
+            }
         }
 
         .message-action i.fa-thumbs-down {
@@ -3304,6 +3371,9 @@
                 minute: '2-digit'
             });
 
+            const hasLiked = message.likes?.some(like => like._id === currentUser?.id);
+            const hasDisliked = message.dislikes?.some(dislike => dislike._id === currentUser?.id);
+
             messageElement.innerHTML = `
                 <div class="message-header">
                     <img src="${sender.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}"
@@ -3321,20 +3391,28 @@
                     <span class="message-action" onclick="toggleReplyForm('${message._id}')">
                         <i class="fas fa-reply"></i> Reply
                     </span>
-                    <span class="message-action ${message.likes.includes(currentUser?.id) ? 'liked' : ''}"
+                    <span class="message-action ${hasLiked ? 'liked' : ''}"
                           onclick="toggleLike('${message._id}')">
                         <i class="fas fa-heart"></i>
-                        <span class="like-count">${message.likes.length}</span>
+                        <span class="like-count">${message.likes?.length || 0}</span>
                     </span>
-                    <span class="message-action ${message.dislikes?.includes(currentUser?.id) ? 'disliked' : ''}"
+                    <span class="message-action ${hasDisliked ? 'disliked' : ''}"
                           onclick="toggleDislike('${message._id}')">
                         <i class="fas fa-thumbs-down"></i>
                         <span class="dislike-count">${message.dislikes?.length || 0}</span>
                     </span>
                 </div>
-                <div class="message-reactions">
-                    ${message.likes.length > 0 ? `<div class="likes">Liked by ${message.likes.map(user => user.name).join(', ')}</div>` : ''}
-                    ${message.dislikes?.length > 0 ? `<div class="dislikes">Disliked by ${message.dislikes.map(user => user.name).join(', ')}</div>` : ''}
+                <div class="message-reactions ${(message.likes?.length > 0 || message.dislikes?.length > 0) ? 'active' : ''}">
+                    ${message.likes?.length > 0 ? `
+                        <div class="likes">
+                            <i class="fas fa-heart"></i>
+                            ${message.likes.length} ${message.likes.length === 1 ? 'person' : 'people'}
+                        </div>` : ''}
+                    ${message.dislikes?.length > 0 ? `
+                        <div class="dislikes">
+                            <i class="fas fa-thumbs-down"></i>
+                            ${message.dislikes.length} ${message.dislikes.length === 1 ? 'person' : 'people'}
+                        </div>` : ''}
                 </div>
                 <div class="reply-form" id="replyForm-${message._id}">
                     <div class="reply-input-container">

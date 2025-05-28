@@ -65,7 +65,7 @@ app.use((err, req, res, next) => {
 // Serve index.html for all non-API routes (SPA support)
 app.get('*', (req, res) => {
     if (!req.path.startsWith('/api/')) {
-        res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
     }
 });
 

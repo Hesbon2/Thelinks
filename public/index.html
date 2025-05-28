@@ -20,32 +20,32 @@
             --agent-color: #1070CA;
             --customer-color: #47B881;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background-color: var(--light-color);
             color: var(--dark-color);
             line-height: 1.6;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         h1 {
             text-align: center;
             margin-bottom: 30px;
             color: var(--primary-color);
         }
-        
+
         .enquiry-form {
             background: white;
             padding: 25px;
@@ -53,17 +53,17 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
         }
-        
+
         input, select, textarea {
             width: 100%;
             padding: 12px;
@@ -71,12 +71,12 @@
             border-radius: 8px;
             font-size: 16px;
         }
-        
+
         textarea {
             min-height: 120px;
             resize: vertical;
         }
-        
+
         button {
             background-color: var(--primary-color);
             color: white;
@@ -88,11 +88,11 @@
             font-weight: 600;
             transition: background-color 0.3s;
         }
-        
+
         button:hover {
             background-color: #e04a4f;
         }
-        
+
         .filters {
             background: white;
             padding: 20px;
@@ -103,21 +103,21 @@
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
         }
-        
+
         .filter-group {
             margin-bottom: 0;
         }
-        
+
         .filter-group label {
             font-size: 14px;
         }
-        
+
         .enquiry-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
         }
-        
+
         .enquiry-card {
             background: white;
             border-radius: 12px;
@@ -125,11 +125,11 @@
             overflow: hidden;
             transition: transform 0.3s;
         }
-        
+
         .enquiry-card:hover {
             transform: translateY(-5px);
         }
-        
+
         .card-header {
             display: flex;
             align-items: center;
@@ -137,7 +137,7 @@
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
         }
-        
+
         .profile-pic {
             width: 50px;
             height: 50px;
@@ -146,14 +146,14 @@
             margin-right: 15px;
             background-color: #ddd;
         }
-        
+
         .user-info h3 {
             margin: 0;
             font-size: 18px;
             display: flex;
             align-items: center;
         }
-        
+
         .user-type {
             font-size: 12px;
             padding: 2px 8px;
@@ -161,42 +161,42 @@
             margin-left: 8px;
             color: white;
         }
-        
+
         .user-type.host {
             background-color: var(--host-color);
         }
-        
+
         .user-type.agent {
             background-color: var(--agent-color);
         }
-        
+
         .user-type.customer {
             background-color: var(--customer-color);
         }
-        
+
         .user-info p {
             margin: 5px 0 0;
             color: #767676;
             font-size: 14px;
         }
-        
+
         .card-body {
             padding: 20px;
         }
-        
+
         .title-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-        
+
         .enquiry-title {
             font-size: 20px;
             color: var(--primary-color);
             margin: 0;
         }
-        
+
         .nights-count {
             background-color: rgba(0, 166, 153, 0.1);
             color: var(--secondary-color);
@@ -205,7 +205,7 @@
             font-size: 14px;
             font-weight: 600;
         }
-        
+
         .budget {
             display: flex;
             align-items: center;
@@ -213,28 +213,28 @@
             color: var(--dark-color);
             font-weight: 600;
         }
-        
+
         .budget i {
             margin-right: 8px;
             color: var(--secondary-color);
         }
-        
+
         .enquiry-dates {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
             color: var(--secondary-color);
         }
-        
+
         .enquiry-dates i {
             margin-right: 8px;
         }
-        
+
         .enquiry-description {
             margin-bottom: 15px;
             color: var(--dark-color);
         }
-        
+
         .card-footer {
             padding: 15px 20px;
             border-top: 1px solid var(--border-color);
@@ -243,13 +243,13 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .stats {
             display: flex;
             gap: 20px;
             flex: 1;
         }
-        
+
         .stat {
             display: flex;
             flex-direction: column;
@@ -259,25 +259,25 @@
             min-width: 60px;
             flex: 1;
         }
-        
+
         .stat i {
             font-size: 18px;
             margin-bottom: 4px;
             color: var(--primary-color);
         }
-        
+
         .stat span {
             white-space: nowrap;
             text-align: center;
         }
-        
+
         .actions {
             display: flex;
             gap: 15px;
             flex: 1;
             justify-content: flex-end;
         }
-        
+
         .action-btn {
             display: flex;
             flex-direction: column;
@@ -293,28 +293,28 @@
             transition: background-color 0.3s;
             min-width: 70px;
         }
-        
+
         .action-btn i {
             font-size: 18px;
             margin-bottom: 4px;
         }
-        
+
         .action-btn span {
             white-space: nowrap;
         }
-        
+
         .action-btn:hover {
             background-color: rgba(255, 90, 95, 0.1);
         }
-        
+
         .action-btn.reply {
             color: var(--secondary-color);
         }
-        
+
         .action-btn.reply:hover {
             background-color: rgba(0, 166, 153, 0.1);
         }
-        
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -328,7 +328,7 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .modal-content {
             background-color: white;
             border-radius: 12px;
@@ -338,7 +338,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             position: relative;
         }
-        
+
         .close-modal {
             position: absolute;
             top: 15px;
@@ -347,13 +347,13 @@
             cursor: pointer;
             color: #767676;
         }
-        
+
         .modal-header {
             display: flex;
             align-items: center;
             margin-bottom: 20px;
         }
-        
+
         .modal-profile-pic {
             width: 80px;
             height: 80px;
@@ -362,17 +362,17 @@
             margin-right: 20px;
             background-color: #ddd;
         }
-        
+
         .modal-user-info h2 {
             margin: 0;
             display: flex;
             align-items: center;
         }
-        
+
         .contact-details {
             margin-top: 20px;
         }
-        
+
         .contact-item {
             display: flex;
             align-items: center;
@@ -380,7 +380,7 @@
             padding-bottom: 15px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .contact-icon {
             width: 40px;
             height: 40px;
@@ -391,35 +391,35 @@
             margin-right: 15px;
             color: white;
         }
-        
+
         .contact-icon.phone {
             background-color: var(--agent-color);
         }
-        
+
         .contact-icon.whatsapp {
             background-color: #25D366;
         }
-        
+
         .contact-icon.email {
             background-color: var(--primary-color);
         }
-        
+
         .contact-info h4 {
             margin: 0 0 5px;
         }
-        
+
         .contact-info p {
             margin: 0;
             color: #767676;
             font-size: 14px;
         }
-        
+
         .contact-actions {
             display: flex;
             gap: 10px;
             margin-top: 5px;
         }
-        
+
         .contact-action {
             padding: 5px 10px;
             border-radius: 5px;
@@ -429,40 +429,40 @@
             display: flex;
             align-items: center;
         }
-        
+
         .contact-action i {
             margin-right: 5px;
         }
-        
+
         .contact-action.call {
             background-color: var(--agent-color);
         }
-        
+
         .contact-action.message {
             background-color: #25D366;
         }
-        
+
         .contact-action.mail {
             background-color: var(--primary-color);
         }
-        
+
         @media (max-width: 768px) {
             .enquiry-list {
                 grid-template-columns: 1fr;
             }
-            
+
             .filters {
                 grid-template-columns: 1fr;
             }
         }
-        
+
         .tab-navigation {
             display: flex;
             justify-content: center;
             margin-bottom: 30px;
             gap: 15px;
         }
-        
+
         .tab-btn {
             padding: 15px 30px;
             border: none;
@@ -478,19 +478,19 @@
             color: var(--dark-color);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         .tab-btn.active {
             background: var(--primary-color);
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(255, 90, 95, 0.2);
         }
-        
+
         .tab-btn[data-tab="listing"].active {
             background: var(--secondary-color);
             box-shadow: 0 4px 12px rgba(0, 166, 153, 0.2);
         }
-        
+
         .property-type {
             background: var(--secondary-color);
             color: white;
@@ -499,7 +499,7 @@
             font-size: 14px;
             font-weight: 600;
         }
-        
+
         /* Remove image upload related styles */
         .image-upload,
         .image-upload:hover,
@@ -516,16 +516,16 @@
                 flex-direction: row;
                 gap: 10px;
             }
-            
+
             .stats, .actions {
                 gap: 10px;
             }
-            
+
             .stat, .action-btn {
                 min-width: 50px;
                 font-size: 12px;
             }
-            
+
             .stat i, .action-btn i {
                 font-size: 16px;
             }
@@ -1347,7 +1347,7 @@
                 opacity: 1;
             }
         }
-        
+
         @keyframes slideOut {
             from {
                 transform: translateX(0);
@@ -1556,7 +1556,7 @@
         </div>
 
         <h1>Property Connect</h1>
-        
+
         <!-- Authentication Required Message -->
         <div id="authRequiredMessage" class="auth-required-message">
             <div class="auth-required-content">
@@ -1589,7 +1589,7 @@
                         <i class="fas fa-home"></i> List Property
                     </button>
                 </div>
-                
+
                 <!-- Property Seeker Form -->
                 <div class="enquiry-form" id="seekerForm">
                     <h2>Looking for a Property?</h2>
@@ -1602,7 +1602,7 @@
                                 <option value="agent">Agent</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="unitSize">Unit Size</label>
                             <select id="unitSize" required>
@@ -1614,41 +1614,41 @@
                                 <option value="Studio">Studio</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="budget">Budget per day (KSH)</label>
                             <input type="number" id="budget" placeholder="e.g. 5000" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="checkIn">Check-in Date</label>
                             <input type="date" id="checkIn" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="checkOut">Check-out Date</label>
                             <input type="date" id="checkOut" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="location">Location Preference</label>
                             <input type="text" id="location" placeholder="e.g. Kwale town" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="amenities">Special Requirements</label>
                             <input type="text" id="amenities" placeholder="e.g. must have swimming pool, parking, etc.">
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="description">Detailed Description</label>
                             <textarea id="description" placeholder="Tell us more about what you're looking for..." required></textarea>
                         </div>
-                        
+
                         <button type="submit">Post Enquiry</button>
                     </form>
                 </div>
-                
+
                 <!-- Property Listing Form -->
                 <div class="enquiry-form" id="listingForm" style="display: none;">
                     <h2>List Your Property</h2>
@@ -1660,7 +1660,7 @@
                                 <option value="agent">Real Estate Agent</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="propertyType">Property Type</label>
                             <select id="propertyType" required>
@@ -1674,37 +1674,37 @@
                                 <option value="Penthouse">Penthouse</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="listingPrice">Price per day (KSH)</label>
                             <input type="number" id="listingPrice" placeholder="e.g. 5000" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="propertyLocation">Property Location</label>
                             <input type="text" id="propertyLocation" placeholder="e.g. Kwale town" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="availableFrom">Available From</label>
                             <input type="date" id="availableFrom" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="availableTo">Available Until</label>
                             <input type="date" id="availableTo" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="propertyAmenities">Available Amenities</label>
                             <input type="text" id="propertyAmenities" placeholder="e.g. Swimming pool, parking, etc.">
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="propertyDescription">Property Description</label>
                             <textarea id="propertyDescription" placeholder="Describe your property in detail..." required></textarea>
                         </div>
-                        
+
                         <button type="submit">List Property</button>
                     </form>
                 </div>
@@ -1718,7 +1718,7 @@
                         <option value="">All Locations</option>
                     </select>
                 </div>
-                
+
                 <div class="filter-group">
                     <label for="filterUserType">Requester Type</label>
                     <select id="filterUserType">
@@ -1728,7 +1728,7 @@
                         <option value="customer">Customer</option>
                     </select>
                 </div>
-                
+
                 <div class="filter-group">
                     <label for="filterDate">Date Range</label>
                     <select id="filterDate">
@@ -1739,7 +1739,7 @@
                         <option value="next_month">Next Month</option>
                     </select>
                 </div>
-                
+
                 <div class="filter-group">
                     <label for="filterNights">Nights</label>
                     <select id="filterNights">
@@ -1750,7 +1750,7 @@
                         <option value="15+">15+ nights</option>
                     </select>
                 </div>
-                
+
                 <div class="filter-group">
                     <label for="filterBudget">Budget</label>
                     <select id="filterBudget">
@@ -1762,13 +1762,13 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="enquiry-list" id="enquiryList">
                 <!-- Enquiry cards will be added here dynamically -->
             </div>
         </div>
     </div>
-    
+
     <!-- Contact Modal -->
     <div class="modal" id="contactModal">
         <div class="modal-content">
@@ -1780,7 +1780,7 @@
                     <span class="user-type" id="modalUserType"></span>
                 </div>
             </div>
-            
+
             <div class="contact-details">
                 <div class="contact-item">
                     <div class="contact-icon phone">
@@ -1799,7 +1799,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="contact-item">
                     <div class="contact-icon whatsapp">
                         <i class="fab fa-whatsapp"></i>
@@ -1814,7 +1814,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="contact-item">
                     <div class="contact-icon email">
                         <i class="fas fa-envelope"></i>
@@ -1943,109 +1943,158 @@
     </div>
 
     <script>
-        // Authentication state
-        let currentUser = null;
-        const API_URL = window.location.hostname === 'localhost'
-            ? 'http://localhost:3000/api'
-            : 'https://thelinks-gray.vercel.app/api';
-        let enquiries = [];
-        let propertyListings = [];
+        console.log('Script starting...');
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            // Authentication state
+            let currentUser = null;
+            const API_URL = window.location.hostname === 'localhost'
+                ? 'http://localhost:3000/api'
+                : 'https://thelinks-gray.vercel.app/api';
+            let enquiries = [];
+            let propertyListings = [];
 
-        // DOM Elements
-        const authModal = document.getElementById('authModal');
-        const authButton = document.getElementById('authButton');
-        const userProfile = document.getElementById('userProfile');
-        const userProfilePic = document.getElementById('userProfilePic');
-        const authTabs = document.querySelectorAll('.auth-tab');
-        const authForms = document.querySelectorAll('.auth-form');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const loginError = document.getElementById('loginError');
-        const registerError = document.getElementById('registerError');
-        const logoutLink = document.getElementById('logoutLink');
-        const userProfilePicture = document.getElementById('userProfilePic');
-        const contactModal = document.getElementById('contactModal');
-        const postFormsContainer = document.getElementById('postFormsContainer');
-        const tabButtons = document.querySelectorAll('.tab-btn');
+            // DOM Elements
+            console.log('Initializing DOM elements...');
+            const authModal = document.getElementById('authModal');
+            const authButton = document.getElementById('authButton');
+            const userProfile = document.getElementById('userProfile');
+            const userProfilePic = document.getElementById('userProfilePic');
 
-        // Messaging functionality
-        const messagingWindow = document.getElementById('messagingWindow');
-        const closeMessagingBtn = document.getElementById('closeMessaging');
-        const messagesList = document.getElementById('messagesList');
-        const messageForm = document.getElementById('messageForm');
-        const newMessageInput = document.getElementById('newMessageInput');
-        const messagingUserPic = document.getElementById('messagingUserPic');
-        const messagingUserName = document.getElementById('messagingUserName');
-        const chatParticipants = document.getElementById('chatParticipants');
+            // Verify critical elements
+            if (!authButton) console.error('Critical: Auth button not found in DOM');
+            if (!authModal) console.error('Critical: Auth modal not found in DOM');
+            if (!userProfile) console.error('User profile element not found in DOM');
+            if (!userProfilePic) console.error('User profile pic element not found in DOM');
+            const authTabs = document.querySelectorAll('.auth-tab');
+            const authForms = document.querySelectorAll('.auth-form');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginError = document.getElementById('loginError');
+            const registerError = document.getElementById('registerError');
+            const logoutLink = document.getElementById('logoutLink');
+            const userProfilePicture = document.getElementById('userProfilePic');
+            const contactModal = document.getElementById('contactModal');
+            const postFormsContainer = document.getElementById('postFormsContainer');
+            const tabButtons = document.querySelectorAll('.tab-btn');
 
-        // Close messaging window
-        closeMessagingBtn.addEventListener('click', () => {
-            closeMessagingWindow();
-        });
+            // Additional DOM elements that were missing
+            const enquiryForm = document.getElementById('enquiryForm');
+            const propertyListingForm = document.getElementById('propertyListingForm');
+            const enquiryList = document.getElementById('enquiryList');
+            const filterLocation = document.getElementById('filterLocation');
 
-        function closeMessagingWindow() {
-            const itemId = messagingWindow.dataset.itemId;
-            if (itemId) {
-                // Leave the chat room using Socket.IO
-                leaveChatRoom(itemId);
+            // Messaging functionality
+            const messagingWindow = document.getElementById('messagingWindow');
+            const closeMessagingBtn = document.getElementById('closeMessaging');
+            const messagesList = document.getElementById('messagesList');
+            const messageForm = document.getElementById('messageForm');
+            const newMessageInput = document.getElementById('newMessageInput');
+            const messagingUserPic = document.getElementById('messagingUserPic');
+            const messagingUserName = document.getElementById('messagingUserName');
+            const chatParticipants = document.getElementById('chatParticipants');
+
+            // Check if critical elements exist
+            if (!authButton) {
+                console.error('Auth button not found!');
+                return;
             }
-            messagingWindow.classList.remove('active');
-            messagesList.innerHTML = '';
-            messagingWindow.dataset.itemId = '';
-        }
 
-        // Modal functions
-        function closeModal(modalElement) {
-            modalElement.style.display = 'none';
-        }
-
-        function openModal(modalElement) {
-            modalElement.style.display = 'flex';
-        }
-
-        // Close modals when clicking outside
-        window.addEventListener('click', function(event) {
-            if (event.target === authModal) {
-                closeModal(authModal);
+            if (!authModal) {
+                console.error('Auth modal not found!');
+                return;
             }
-            if (event.target === contactModal) {
-                closeModal(contactModal);
-            }
-        });
 
-        // Close button event listeners
-        document.querySelectorAll('.close-modal').forEach(button => {
-            button.addEventListener('click', function() {
-                const modal = this.closest('.modal');
-                if (modal) {
-                    closeModal(modal);
+            // Close messaging window
+            if (closeMessagingBtn) {
+                closeMessagingBtn.addEventListener('click', () => {
+                    closeMessagingWindow();
+                });
+            }
+
+            function closeMessagingWindow() {
+                if (messagingWindow) {
+                    const itemId = messagingWindow.dataset.itemId;
+                    if (itemId) {
+                        // Leave the chat room using Socket.IO
+                        leaveChatRoom(itemId);
+                    }
+                    messagingWindow.classList.remove('active');
+                    if (messagesList) {
+                        messagesList.innerHTML = '';
+                    }
+                    messagingWindow.dataset.itemId = '';
+                }
+            }
+
+            // Modal functions
+            function closeModal(modalElement) {
+                if (modalElement) {
+                    modalElement.style.display = 'none';
+                }
+            }
+
+            function openModal(modalElement) {
+                if (modalElement) {
+                    modalElement.style.display = 'flex';
+                }
+            }
+
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                if (authModal && event.target === authModal) {
+                    closeModal(authModal);
+                }
+                if (contactModal && event.target === contactModal) {
+                    closeModal(contactModal);
                 }
             });
-        });
 
-        // Check if user is already logged in
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetchCurrentUser();
-        }
+            // Close button event listeners
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    if (modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
 
-        // Event Listeners
-        authButton.addEventListener('click', () => {
-            authModal.style.display = 'flex';
-        });
-
-        authModal.addEventListener('click', (e) => {
-            if (e.target === authModal) {
-                authModal.style.display = 'none';
+            // Check if user is already logged in
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetchCurrentUser();
             }
-        });
+
+            // Event Listeners
+            if (authButton) {
+                authButton.addEventListener('click', () => {
+                    console.log('Auth button clicked');
+                    if (authModal) {
+                        authModal.style.display = 'flex';
+                    } else {
+                        console.error('Auth modal not found');
+                    }
+                });
+            } else {
+                console.error('Auth button not found');
+            }
+
+            if (authModal) {
+                authModal.addEventListener('click', (e) => {
+                    if (e.target === authModal) {
+                        authModal.style.display = 'none';
+                    }
+                });
+            }
 
         authTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 // Remove active class from all tabs and forms
                 authTabs.forEach(t => t.classList.remove('active'));
                 authForms.forEach(f => f.classList.remove('active'));
-                
+
                 // Add active class to clicked tab and corresponding form
                 tab.classList.add('active');
                 document.querySelector(`.auth-form#${tab.dataset.tab}Form`).classList.add('active');
@@ -2272,13 +2321,13 @@
         // Handle enquiry form submission
         enquiryForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             if (!currentUser) {
                 alert('Please login to post an enquiry');
                 authModal.style.display = 'flex';
                 return;
             }
-            
+
             const formData = {
                 title: document.getElementById('unitSize').value,
                 budget: parseInt(document.getElementById('budget').value),
@@ -2288,7 +2337,7 @@
                 amenities: document.getElementById('amenities').value,
                 description: document.getElementById('description').value
             };
-            
+
             try {
                 const response = await fetch(`${API_URL}/enquiries`, {
                     method: 'POST',
@@ -2330,13 +2379,13 @@
         // Handle property listing form submission
         propertyListingForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             if (!currentUser) {
                 alert('Please login to list a property');
                 authModal.style.display = 'flex';
                 return;
             }
-            
+
             const formData = {
                 title: `${document.getElementById('propertyType').value} in ${document.getElementById('propertyLocation').value}`,
                 propertyType: document.getElementById('propertyType').value,
@@ -2347,7 +2396,7 @@
                 amenities: document.getElementById('propertyAmenities').value,
                 description: document.getElementById('propertyDescription').value
             };
-            
+
             try {
                 const response = await fetch(`${API_URL}/listings`, {
                     method: 'POST',
@@ -2365,11 +2414,11 @@
                 const newListing = await response.json();
                 propertyListings.unshift(newListing);
                 propertyListingForm.reset();
-                
+
                 // Switch to seeker view and refresh the display
                 tabButtons[0].click();
                 displayEnquiries();
-                
+
                 alert('Property listed successfully!');
             } catch (error) {
                 console.error('Error posting listing:', error);
@@ -2380,15 +2429,15 @@
         // Display enquiries
         async function displayEnquiries(enquiriesToShow = enquiries) {
             enquiryList.innerHTML = '';
-            
+
             // Combine items and remove duplicates
             const allItems = [...enquiriesToShow];
-            
+
             // Only add listings if we're showing all items
             if (enquiriesToShow === enquiries) {
                 allItems.push(...propertyListings);
             }
-            
+
             // Create a map using _id as key to remove duplicates
             const uniqueItemsMap = new Map();
             allItems.forEach(item => {
@@ -2396,7 +2445,7 @@
                     uniqueItemsMap.set(item._id.toString(), item);
                 }
             });
-            
+
             // Convert back to array and sort by date
             const uniqueItems = Array.from(uniqueItemsMap.values())
                 .sort((a, b) => new Date(b.posted) - new Date(a.posted));
@@ -2405,27 +2454,27 @@
             console.log('Total unique items:', uniqueItems.length);
             console.log('Enquiries:', enquiriesToShow.length);
             console.log('Listings:', propertyListings.length);
-            
+
             for (const item of uniqueItems) {
                 const card = document.createElement('div');
                 card.className = 'enquiry-card';
                 card.dataset.itemId = item._id;
                 card.dataset.itemType = item.itemType; // Add type to dataset
-                
+
                 const isListing = item.itemType === 'listing';
-                const dateRange = isListing 
+                const dateRange = isListing
                     ? formatDateRange(item.availableFrom, item.availableTo)
                     : formatDateRange(item.checkIn, item.checkOut);
-                
+
                 const user = item.userId;
                 if (!user) {
                     console.error('Missing user data for item:', item);
                     continue; // Skip items with missing user data
                 }
 
-                const postedDate = new Date(item.posted).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'short', 
+                const postedDate = new Date(item.posted).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit'
@@ -2450,10 +2499,10 @@
                 // Escape special characters in strings
                 const escapedTitle = (item.title || '').replace(/'/g, "\\'");
                 const escapedDescription = (item.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
-                
+
                 card.innerHTML = `
                     <div class="card-header" data-user-id="${user._id}">
-                        <img src="${user.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" 
+                        <img src="${user.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}"
                              alt="${user.name}" class="profile-pic">
                         <div class="user-info">
                             <h3>${user.name} <span class="user-type ${user.userType}">${getUserTypeText(user.userType)}</span></h3>
@@ -2463,7 +2512,7 @@
                     <div class="card-body">
                         <div class="title-row">
                             <h3 class="enquiry-title">${item.title}</h3>
-                            ${isListing 
+                            ${isListing
                                 ? `<span class="property-type">${item.propertyType}</span>`
                                 : `<span class="nights-count">${calculateNights(item.checkIn, item.checkOut)} nights</span>`
                             }
@@ -2502,7 +2551,7 @@
                                 <i class="fas fa-reply"></i>
                                 <span>Join Discussion ${(item.replies || 0) > 0 ? `(${item.replies})` : ''}</span>
                             </button>
-                            <button class="action-btn save ${isBookmarked ? 'bookmarked' : ''}" 
+                            <button class="action-btn save ${isBookmarked ? 'bookmarked' : ''}"
                                     onclick="toggleBookmark('${item._id}', '${item.itemType}', this)">
                                 <i class="${isBookmarked ? 'fas' : 'far'} fa-bookmark"></i>
                                 <span>${isBookmarked ? 'Saved' : 'Save'}</span>
@@ -2510,9 +2559,9 @@
                         </div>
                     </div>
                 `;
-                
+
                 enquiryList.appendChild(card);
-                
+
                 // Increment view count
                 incrementViews(item._id, isListing);
             }
@@ -2533,16 +2582,16 @@
             const card = document.createElement('div');
             card.className = 'enquiry-card';
             card.dataset.itemId = item._id;
-            
+
             const isListing = 'propertyType' in item;
-            const dateRange = isListing 
+            const dateRange = isListing
                 ? formatDateRange(item.availableFrom, item.availableTo)
                 : formatDateRange(item.checkIn, item.checkOut);
-            
+
             const user = item.userId;
-            const postedDate = new Date(item.posted).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
+            const postedDate = new Date(item.posted).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
@@ -2551,10 +2600,10 @@
             // Escape special characters in strings
             const escapedTitle = item.title.replace(/'/g, "\\'");
             const escapedDescription = (item.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
-            
+
             card.innerHTML = `
                 <div class="card-header" data-user-id="${user._id}">
-                    <img src="${user.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" 
+                    <img src="${user.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}"
                          alt="${user.name}" class="profile-pic">
                     <div class="user-info">
                         <h3>${user.name} <span class="user-type ${user.userType}">${getUserTypeText(user.userType)}</span></h3>
@@ -2564,7 +2613,7 @@
                 <div class="card-body">
                     <div class="title-row">
                         <h3 class="enquiry-title">${item.title}</h3>
-                        ${isListing 
+                        ${isListing
                             ? `<span class="property-type">${item.propertyType}</span>`
                             : `<span class="nights-count">${calculateNights(item.checkIn, item.checkOut)} nights</span>`
                         }
@@ -2603,7 +2652,7 @@
                             <i class="fas fa-reply"></i>
                             <span>Join Discussion ${item.replies > 0 ? `(${item.replies})` : ''}</span>
                         </button>
-                        <button class="action-btn save ${isBookmarked ? 'bookmarked' : ''}" 
+                        <button class="action-btn save ${isBookmarked ? 'bookmarked' : ''}"
                                 onclick="toggleBookmark('${item._id}', '${isListing ? 'listing' : 'enquiry'}', this)">
                             <i class="${isBookmarked ? 'fas' : 'far'} fa-bookmark"></i>
                             <span>${isBookmarked ? 'Saved' : 'Save'}</span>
@@ -2611,7 +2660,7 @@
                     </div>
                 </div>
             `;
-            
+
             return card;
         }
 
@@ -2626,7 +2675,7 @@
             modalPhone.textContent = user.phone || 'Not provided';
             modalWhatsApp.textContent = user.whatsapp || 'Not provided';
             modalEmail.textContent = user.email;
-            
+
             contactModal.style.display = 'flex';
         }
 
@@ -2644,10 +2693,10 @@
                 ...enquiries.map(enquiry => enquiry.location),
                 ...propertyListings.map(listing => listing.location)
             ]);
-            
+
             // Clear existing options except the first one
             filterLocation.innerHTML = '<option value="">All Locations</option>';
-            
+
             // Add locations to filter dropdown
             locations.forEach(location => {
                 if (location) {
@@ -2657,7 +2706,7 @@
                     filterLocation.appendChild(option);
                 }
             });
-            
+
             // Set up event listeners for filters
             [filterLocation, filterUserType, filterDate, filterNights, filterBudget].forEach(filter => {
                 filter.addEventListener('change', applyFilters);
@@ -2677,23 +2726,23 @@
             const dateFilter = filterDate.value;
             const nightsFilter = filterNights.value;
             const budgetFilter = filterBudget.value;
-            
+
             const filteredEnquiries = enquiries.filter(enquiry => {
                 // Location filter
                 if (locationFilter && enquiry.location !== locationFilter) {
                     return false;
                 }
-                
+
                 // User type filter
                 if (userTypeFilter && enquiry.userId.userType !== userTypeFilter) {
                     return false;
                 }
-                
+
                 // Date filter
                 if (dateFilter) {
                     const today = new Date();
                     const checkInDate = new Date(enquiry.checkIn);
-                    
+
                     switch(dateFilter) {
                         case 'this_week':
                             const nextWeek = new Date(today);
@@ -2719,33 +2768,33 @@
                             break;
                     }
                 }
-                
+
                 // Nights filter
                 if (nightsFilter) {
                     const nights = calculateNights(enquiry.checkIn, enquiry.checkOut);
                     const [min, max] = nightsFilter.split('-').map(Number);
-                    
+
                     if (nightsFilter.endsWith('+')) {
                         if (nights < parseInt(nightsFilter)) return false;
                     } else if (nights < min || nights > max) {
                         return false;
                     }
                 }
-                
+
                 // Budget filter
                 if (budgetFilter) {
                     const [min, max] = budgetFilter.split('-').map(Number);
-                    
+
                     if (budgetFilter.endsWith('+')) {
                         if (enquiry.budget < parseInt(budgetFilter)) return false;
                     } else if (enquiry.budget < min || enquiry.budget > max) {
                         return false;
                     }
                 }
-                
+
                 return true;
             });
-            
+
             displayEnquiries(filteredEnquiries);
         }
 
@@ -2769,7 +2818,7 @@
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 // Add active class to clicked button
                 button.classList.add('active');
-                
+
                 // Show/hide forms based on selected tab
                 if (button.dataset.tab === 'seeker') {
                     document.getElementById('seekerForm').style.display = 'block';
@@ -2785,13 +2834,13 @@
         function formatDateRange(startDate, endDate) {
             const start = new Date(startDate);
             const end = new Date(endDate);
-            
-            const options = { 
-                year: 'numeric', 
-                month: 'short', 
+
+            const options = {
+                year: 'numeric',
+                month: 'short',
                 day: 'numeric'
             };
-            
+
             return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
         }
 
@@ -2818,10 +2867,10 @@
             messagingWindow.dataset.itemId = itemId;
             messagingWindow.classList.add('active');
             messagingUserName.textContent = title;
-            
+
             // Join the chat room using Socket.IO
             joinChatRoom(itemId);
-            
+
             // Reset unread count for this chat
             if (unreadMessages.has(itemId)) {
                 unreadMessages.delete(itemId);
@@ -2873,7 +2922,7 @@
             const messageElement = document.createElement('div');
             messageElement.className = `message ${isReply ? 'reply' : ''}`;
             messageElement.dataset.messageId = message._id;
-            
+
             const sender = message.senderId;
             const isCurrentUser = currentUser && sender._id === currentUser.id;
             const timestamp = new Date(message.timestamp).toLocaleString('en-US', {
@@ -2885,8 +2934,8 @@
 
             messageElement.innerHTML = `
                 <div class="message-header">
-                    <img src="${sender.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" 
-                         alt="${sender.name}" 
+                    <img src="${sender.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}"
+                         alt="${sender.name}"
                          class="message-user-pic">
                     <div class="message-user-info">
                         <h4 class="message-user-name">${sender.name}</h4>
@@ -2900,9 +2949,9 @@
                     <span class="message-action" onclick="toggleReplyForm('${message._id}')">
                         <i class="fas fa-reply"></i> Reply
                     </span>
-                    <span class="message-action ${message.likes.includes(currentUser?.id) ? 'liked' : ''}" 
+                    <span class="message-action ${message.likes.includes(currentUser?.id) ? 'liked' : ''}"
                           onclick="toggleLike('${message._id}')">
-                        <i class="fas fa-heart"></i> 
+                        <i class="fas fa-heart"></i>
                         <span class="like-count">${message.likes.length}</span>
                     </span>
                 </div>
@@ -2911,7 +2960,7 @@
                 </div>
                 <div class="reply-form" id="replyForm-${message._id}">
                     <div class="reply-input-container">
-                        <input type="text" placeholder="Write a reply..." 
+                        <input type="text" placeholder="Write a reply..."
                                onkeypress="handleReplyKeyPress(event, '${message._id}')"
                                id="replyInput-${message._id}">
                         <button type="button" onclick="submitReply('${message._id}')" class="reply-send-btn">
@@ -2933,7 +2982,7 @@
         function submitReply(messageId) {
             const input = document.getElementById(`replyInput-${messageId}`);
             const content = input.value.trim();
-            
+
             if (!content) return;
 
             const itemId = messagingWindow.dataset.itemId;
@@ -2999,7 +3048,7 @@
 
                 likeCount.textContent = message.likes.length;
                 likeAction.classList.toggle('liked', message.likes.includes(currentUser.id));
-                likesText.textContent = message.likes.length > 0 ? 
+                likesText.textContent = message.likes.length > 0 ?
                     `Liked by ${message.likes.map(user => user.name).join(', ')}` : '';
             })
             .catch(error => {
@@ -3011,20 +3060,20 @@
         // Add message form submit handler
         messageForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             if (!currentUser) {
                 alert('Please login to send a message');
                 authModal.style.display = 'flex';
                 return;
             }
-            
+
             const content = newMessageInput.value.trim();
             if (!content) return;
-            
+
             const itemId = messagingWindow.dataset.itemId;
             const submitButton = this.querySelector('button');
             submitButton.disabled = true;
-            
+
             try {
                 const response = await fetch(`${API_URL}/messages`, {
                     method: 'POST',
@@ -3039,7 +3088,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (!response.ok) {
                     throw new Error(data.error || 'Failed to send message');
                 }
@@ -3079,7 +3128,7 @@
                 }
 
                 const bookmarks = await response.json();
-                
+
                 if (bookmarks.length === 0) {
                     bookmarksList.innerHTML = `
                         <div class="no-bookmarks">
@@ -3092,7 +3141,7 @@
                 }
 
                 bookmarksList.innerHTML = '';
-                
+
                 // Fetch full details for each bookmarked item
                 const itemPromises = bookmarks.map(async (bookmark) => {
                     const endpoint = bookmark.itemType === 'listing' ? 'listings' : 'enquiries';
@@ -3142,7 +3191,7 @@
                 button.disabled = true; // Prevent double-clicks
                 const icon = button.querySelector('i');
                 const text = button.querySelector('span');
-                
+
                 // Show loading state
                 icon.className = 'fas fa-spinner fa-spin';
                 text.textContent = 'Saving...';
@@ -3162,12 +3211,12 @@
                 }
 
                 const data = await response.json();
-                
+
                 // Update button appearance
                 button.classList.toggle('bookmarked', data.bookmarked);
                 icon.className = data.bookmarked ? 'fas fa-bookmark' : 'far fa-bookmark';
                 text.textContent = data.bookmarked ? 'Saved' : 'Save';
-                
+
                 // Show success message
                 const message = data.bookmarked ? 'Item bookmarked successfully' : 'Bookmark removed';
                 showNotification(message, 'success');
@@ -3187,7 +3236,7 @@
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
-            
+
             // Add styles for the notification
             notification.style.position = 'fixed';
             notification.style.bottom = '20px';
@@ -3197,15 +3246,15 @@
             notification.style.color = 'white';
             notification.style.zIndex = '9999';
             notification.style.animation = 'slideIn 0.3s ease-out';
-            
+
             if (type === 'success') {
                 notification.style.backgroundColor = 'var(--secondary-color)';
             } else {
                 notification.style.backgroundColor = 'var(--primary-color)';
             }
-            
+
             document.body.appendChild(notification);
-            
+
             // Remove notification after 3 seconds
             setTimeout(() => {
                 notification.style.animation = 'slideOut 0.3s ease-out';
@@ -3228,7 +3277,7 @@
                     opacity: 1;
                 }
             }
-            
+
             @keyframes slideOut {
                 from {
                     transform: translateX(0);
@@ -3342,7 +3391,7 @@
             const baseURL = window.location.hostname === 'localhost'
                 ? 'http://localhost:3000'
                 : 'https://thelinks-gray.vercel.app';
-            
+
             try {
                 socket = io(baseURL, {
                     path: '/socket.io',
@@ -3355,14 +3404,14 @@
 
                 socket.on('connect', () => {
                     console.log('Socket.IO connected');
-                    // Send authentication
+                // Send authentication
                     socket.emit('authenticate', localStorage.getItem('token'));
-                    
-                    showNotificationToast({
-                        title: 'Connected',
-                        message: 'Real-time notifications are now active',
-                        type: 'success'
-                    });
+
+                showNotificationToast({
+                    title: 'Connected',
+                    message: 'Real-time notifications are now active',
+                    type: 'success'
+                });
                 });
 
                 socket.on('authenticated', (response) => {
@@ -3386,20 +3435,20 @@
 
                 socket.on('error', (error) => {
                     console.error('Socket.IO error:', error);
-                    showNotificationToast({
-                        title: 'Connection Error',
-                        message: 'Failed to establish real-time connection',
-                        type: 'error'
-                    });
+                showNotificationToast({
+                    title: 'Connection Error',
+                    message: 'Failed to establish real-time connection',
+                    type: 'error'
+                });
                 });
 
                 socket.on('disconnect', () => {
                     console.log('Socket.IO disconnected');
-                    showNotificationToast({
-                        title: 'Disconnected',
-                        message: 'Attempting to reconnect...',
-                        type: 'warning'
-                    });
+                showNotificationToast({
+                    title: 'Disconnected',
+                    message: 'Attempting to reconnect...',
+                    type: 'warning'
+                });
                 });
 
                 socket.connect();
@@ -3434,7 +3483,7 @@
                 const count = unreadMessages.get(message.itemId) || 0;
                 unreadMessages.set(message.itemId, count + 1);
                 updateUnreadIndicators();
-                
+
                 // Show notification
                 showNotificationToast({
                     title: 'New Message',
@@ -3524,13 +3573,13 @@
             document.querySelectorAll('.action-btn.reply').forEach(button => {
                 const itemId = button.closest('.enquiry-card').dataset.itemId;
                 const unreadCount = unreadMessages.get(itemId) || 0;
-                
+
                 // Remove existing badge if any
                 const existingBadge = button.querySelector('.notification-badge');
                 if (existingBadge) {
                     existingBadge.remove();
                 }
-                
+
                 if (unreadCount > 0) {
                     const badge = document.createElement('div');
                     badge.className = 'notification-badge';
@@ -3547,7 +3596,7 @@
             if (baseStartMessaging) {
                 baseStartMessaging(itemId, title, description);
             }
-            
+
             // Add our new functionality
             if (unreadMessages.has(itemId)) {
                 unreadMessages.delete(itemId);
@@ -3562,7 +3611,7 @@
             if (baseUpdateUIForUser) {
                 baseUpdateUIForUser();
             }
-            
+
             // Add our new functionality
             if (currentUser) {
                 initializePushNotifications();
@@ -3571,10 +3620,10 @@
         };
 
         // Add this before other JavaScript code
-        
+
         // Push Notification Support
         let swRegistration = null;
-        
+
         // Check if the browser supports service workers and push notifications
         async function initializePushNotifications() {
             try {
@@ -3634,6 +3683,7 @@
             }
             return outputArray;
         }
+        }); // This closes the DOMContentLoaded event listener
     </script>
 </body>
 </html>

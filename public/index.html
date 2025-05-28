@@ -704,6 +704,14 @@
             overflow-y: auto;
             background: #f8f9fa;
             -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages .loading-messages {
+            text-align: center;
+            padding: 20px;
+            color: #666;
         }
 
         .message {
@@ -4162,8 +4170,12 @@
             const currentChatId = messagingWindow.dataset.itemId;
             if (currentChatId === message.itemId && messagingWindow.classList.contains('active')) {
                 // Add message to chat
-                addMessageToChat(message);
-                messagesList.scrollTop = messagesList.scrollHeight;
+                addMessageToChat(message, false, 'append');
+                // Only auto-scroll if user is near bottom
+                const isNearBottom = messagesList.scrollHeight - messagesList.scrollTop - messagesList.clientHeight < 100;
+                if (isNearBottom) {
+                    messagesList.scrollTop = messagesList.scrollHeight;
+                }
             } else {
                 // Increment unread count
                 const count = unreadMessages.get(message.itemId) || 0;
@@ -4446,17 +4458,22 @@
                     messagesList.innerHTML = '';
                 }
 
+                // Sort messages by timestamp in ascending order (oldest first)
+                messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
                 messages.forEach(message => {
-                    addMessageToChat(message, false, before ? 'prepend' : 'append');
+                    addMessageToChat(message, false, 'append');
                     if (message.replies && message.replies.length > 0) {
+                        // Sort replies chronologically
+                        message.replies.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
                         message.replies.forEach(reply => {
-                            addMessageToChat(reply, true, before ? 'prepend' : 'append');
+                            addMessageToChat(reply, true, 'append');
                         });
                     }
                 });
 
                 if (messages.length > 0) {
-                    lastMessageTimestamp = messages[0].timestamp;
+                    lastMessageTimestamp = messages[messages.length - 1].timestamp;
                 }
 
                 if (!before) {

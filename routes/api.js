@@ -286,7 +286,7 @@ router.get('/messages/:itemId', auth, async (req, res) => {
         const messages = await Message.find(query)
             .populate('senderId', 'name profilePic userType')
             .populate('replies')
-            .sort({ timestamp: -1 })
+            .sort({ timestamp: 1 })  // Changed to ascending order (oldest first)
             .limit(limit);
 
         res.json(messages);

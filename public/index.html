@@ -563,7 +563,7 @@
                 height: 100vh;
                 max-height: 100vh;
                 bottom: 0;
-                right: 0;
+            right: 0;
                 left: 0;
                 border-radius: 0;
                 transform: translateY(100%);
@@ -590,9 +590,9 @@
                 height: 4px;
                 background: #e2e8f0;
                 border-radius: 2px;
-            }
+        }
 
-            .chat-header {
+        .chat-header {
                 padding-top: 24px !important;
             }
         }
@@ -733,38 +733,31 @@
             align-items: flex-start;
         }
 
-        .message-bubble {
+        .message-content {
             padding: 12px 16px;
             border-radius: 16px;
             font-size: 14px;
             line-height: 1.4;
             word-wrap: break-word;
-            width: fit-content;
             max-width: 100%;
             position: relative;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
-        .message.received .message-bubble {
+        .message.received .message-content {
             background: white;
             border: 1px solid #e2e8f0;
             border-bottom-left-radius: 4px;
             margin-left: 40px;
-            color: #2d3748;
         }
 
-        .message.sent .message-bubble {
+        .message.sent .message-content {
             background: var(--primary-color);
             background: linear-gradient(135deg, var(--primary-color) 0%, #ff7a7e 100%);
             color: white;
             border-bottom-right-radius: 4px;
-            margin-left: auto;
+            margin-right: 8px;
             box-shadow: 0 2px 8px rgba(255, 90, 95, 0.2);
-        }
-
-        .message-content {
-            position: relative;
-            width: 100%;
         }
 
         .message.sent .message-timestamp {
@@ -1430,11 +1423,6 @@
         .message {
             margin-bottom: 20px;
             max-width: 85%;
-            width: 100%;
-        }
-
-        .message.sent {
-            margin-left: auto;
         }
 
         .message.reply {
@@ -1471,24 +1459,11 @@
             color: #666;
         }
 
-        .message-bubble {
+        .message-content {
             background: white;
             padding: 12px 15px;
             border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: fit-content;
-            max-width: 100%;
-        }
-
-        .message.sent .message-bubble {
-            background: var(--primary-color);
-            background: linear-gradient(135deg, var(--primary-color) 0%, #ff7a7e 100%);
-            color: white;
-            margin-left: auto;
-        }
-
-        .message-content {
-            word-wrap: break-word;
         }
 
         .message-actions {
@@ -2051,7 +2026,7 @@
 
         .message.sent .message-action:hover {
             color: white;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .message.received .message-action.liked {
@@ -2061,7 +2036,7 @@
 
         .message.sent .message-action.liked {
             color: white;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .message.received .message-action.disliked {
@@ -2071,7 +2046,7 @@
 
         .message.sent .message-action.disliked {
             color: white;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .message-action i {
@@ -2097,23 +2072,14 @@
 
         .message.sent .message-reactions {
             align-items: flex-end;
-            color: rgba(255, 255, 255, 0.8);
         }
 
-        .message.received .message-reactions .likes {
+        .message-reactions .likes {
             color: var(--primary-color);
         }
 
-        .message.sent .message-reactions .likes {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .message.received .message-reactions .dislikes {
+        .message-reactions .dislikes {
             color: #E12D39;
-        }
-
-        .message.sent .message-reactions .dislikes {
-            color: rgba(255, 255, 255, 0.9);
         }
 
         /* Reply Form Styles */
@@ -2160,10 +2126,9 @@
 
         .message.sent .reply-input-container input {
             color: white;
-        }
-
-        .message.sent .reply-input-container input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            ::placeholder {
+                color: rgba(255, 255, 255, 0.6);
+            }
         }
 
         .reply-input-container input:focus {
@@ -2745,24 +2710,24 @@
 
             // Event Listeners
             if (authButton) {
-                authButton.addEventListener('click', () => {
+            authButton.addEventListener('click', () => {
                     console.log('Auth button clicked');
                     if (authModal) {
-                        authModal.style.display = 'flex';
+                authModal.style.display = 'flex';
                     } else {
                         console.error('Auth modal not found');
                     }
-                });
+            });
             } else {
                 console.error('Auth button not found');
             }
 
             if (authModal) {
-                authModal.addEventListener('click', (e) => {
-                    if (e.target === authModal) {
-                        authModal.style.display = 'none';
-                    }
-                });
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.style.display = 'none';
+            }
+        });
             }
 
         authTabs.forEach(tab => {
@@ -2782,7 +2747,7 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const submitButton = loginForm.querySelector('button[type="submit"]');
-            
+
             try {
                 // Disable the submit button
                 submitButton.disabled = true;
@@ -3665,11 +3630,11 @@
 
         function addMessageToChat(message, isReply = false) {
             const messageElement = document.createElement('div');
-            const isCurrentUser = currentUser && message.senderId._id === currentUser.id;
-            messageElement.className = `message ${isReply ? 'reply' : ''} ${isCurrentUser ? 'sent' : 'received'}`;
+            messageElement.className = `message ${isReply ? 'reply' : ''}`;
             messageElement.dataset.messageId = message._id;
 
             const sender = message.senderId;
+            const isCurrentUser = currentUser && sender._id === currentUser.id;
             const timestamp = new Date(message.timestamp).toLocaleString('en-US', {
                 month: 'short',
                 day: 'numeric',
@@ -4404,11 +4369,11 @@
                 socket.on('connect', () => {
                     console.log('Socket.IO connected successfully');
                     reconnectAttempts = 0; // Reset reconnection attempts
-                    showNotificationToast({
-                        title: 'Connected',
-                        message: 'Real-time notifications are now active',
-                        type: 'success'
-                    });
+                showNotificationToast({
+                    title: 'Connected',
+                    message: 'Real-time notifications are now active',
+                    type: 'success'
+                });
                 });
 
                 socket.on('authenticated', (response) => {
@@ -4477,7 +4442,7 @@
                 // Only auto-scroll if user is near bottom
                 const isNearBottom = messagesList.scrollHeight - messagesList.scrollTop - messagesList.clientHeight < 100;
                 if (isNearBottom) {
-                    messagesList.scrollTop = messagesList.scrollHeight;
+                messagesList.scrollTop = messagesList.scrollHeight;
                 }
             } else {
                 // Increment unread count
@@ -4718,9 +4683,9 @@
                 }
 
                 // Clear unread messages
-                if (unreadMessages.has(itemId)) {
-                    unreadMessages.delete(itemId);
-                    updateUnreadIndicators();
+            if (unreadMessages.has(itemId)) {
+                unreadMessages.delete(itemId);
+                updateUnreadIndicators();
                 }
 
                 // Mark messages as read

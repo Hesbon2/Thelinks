@@ -876,19 +876,62 @@
             color: var(--dark-color);
         }
 
-        .clear-all {
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .clear-all, .mark-read {
             background: none;
             border: none;
-            color: var(--primary-color);
             font-size: 14px;
             cursor: pointer;
             padding: 5px 10px;
             border-radius: 4px;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+        }
+
+        .clear-all {
+            color: var(--primary-color);
+        }
+
+        .mark-read {
+            color: var(--secondary-color);
         }
 
         .clear-all:hover {
             background-color: rgba(255, 90, 95, 0.1);
+        }
+
+        .mark-read:hover {
+            background-color: rgba(0, 166, 153, 0.1);
+        }
+
+        .notification-item {
+            position: relative;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+        }
+
+        .notification-item.unread {
+            background-color: rgba(255, 90, 95, 0.05);
         }
 
         .notification-list {
@@ -1616,22 +1659,25 @@
     <div class="container">
         <!-- User Menu -->
         <div class="user-menu" id="userMenu">
-            <div class="notification-icon" id="notificationIcon">
-                <i class="fas fa-bell"></i>
-                <span class="notification-count" id="notificationCount">0</span>
-                <div class="notification-center" id="notificationCenter">
-                    <div class="notification-header">
-                        <h3>Notifications</h3>
-                        <button class="clear-all" id="clearNotifications">Clear All</button>
-                    </div>
-                    <div class="notification-list" id="notificationList">
-                        <!-- Notifications will be added here -->
-                        <div class="no-notifications">No new notifications</div>
-                    </div>
-                </div>
-            </div>
             <button class="auth-button" id="authButton">Login / Register</button>
             <div id="userProfile" style="display: none;">
+                <div class="notification-icon" id="notificationIcon" style="display: none;">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count" id="notificationCount">0</span>
+                    <div class="notification-center" id="notificationCenter">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <div class="notification-actions">
+                                <button class="mark-read" id="markAsRead">Mark as read</button>
+                                <button class="clear-all" id="clearNotifications">Clear All</button>
+                            </div>
+                        </div>
+                        <div class="notification-list" id="notificationList">
+                            <!-- Notifications will be added here -->
+                            <div class="no-notifications">No new notifications</div>
+                        </div>
+                    </div>
+                </div>
                 <img src="" alt="Profile" id="userProfilePic">
                 <div class="dropdown">
                     <a href="#" id="profileLink">Profile</a>
@@ -2360,9 +2406,10 @@
             const authRequiredMessage = document.getElementById('authRequiredMessage');
 
             if (currentUser) {
-                // Show user profile and hide login button
+                // Show user profile and notification icon, hide login button
                 authButton.style.display = 'none';
                 userProfile.style.display = 'flex';
+                notificationIcon.style.display = 'flex';
                 userProfilePic.src = currentUser.profilePic || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
                 userProfilePic.alt = currentUser.name;
 
@@ -2413,6 +2460,12 @@
         function logout() {
             localStorage.removeItem('token');
             currentUser = null;
+            // Clear notifications
+            notifications = [];
+            notificationCount.textContent = '0';
+            notificationCount.style.display = 'none';
+            notificationIcon.style.display = 'none';
+            notificationCenter.classList.remove('active');
             updateUIForUser();
         }
 
@@ -3103,9 +3156,15 @@
                         <i class="fas fa-heart"></i>
                         <span class="like-count">${message.likes.length}</span>
                     </span>
+                    <span class="message-action ${message.dislikes?.includes(currentUser?.id) ? 'disliked' : ''}"
+                          onclick="toggleDislike('${message._id}')">
+                        <i class="fas fa-thumbs-down"></i>
+                        <span class="dislike-count">${message.dislikes?.length || 0}</span>
+                    </span>
                 </div>
-                <div class="message-likes">
-                    ${message.likes.length > 0 ? `Liked by ${message.likes.map(user => user.name).join(', ')}` : ''}
+                <div class="message-reactions">
+                    ${message.likes.length > 0 ? `<div class="likes">Liked by ${message.likes.map(user => user.name).join(', ')}</div>` : ''}
+                    ${message.dislikes?.length > 0 ? `<div class="dislikes">Disliked by ${message.dislikes.map(user => user.name).join(', ')}</div>` : ''}
                 </div>
                 <div class="reply-form" id="replyForm-${message._id}">
                     <div class="reply-input-container">
@@ -3536,6 +3595,7 @@
         const notificationList = document.getElementById('notificationList');
         const notificationCount = document.getElementById('notificationCount');
         const clearNotificationsBtn = document.getElementById('clearNotifications');
+        const markAsReadBtn = document.getElementById('markAsRead');
 
         // Toggle notification center
         notificationIcon.addEventListener('click', (e) => {
@@ -3559,16 +3619,30 @@
         });
 
         function addNotification(notification) {
-            notifications.unshift(notification);
+            notifications.unshift({
+                ...notification,
+                unread: true,
+                id: Date.now()
+            });
             updateNotificationUI();
             updateNotificationCount();
         }
 
         function updateNotificationCount() {
-            const count = notifications.length;
-            notificationCount.textContent = count;
-            notificationCount.style.display = count > 0 ? 'flex' : 'none';
+            const unreadCount = notifications.filter(n => n.unread).length;
+            notificationCount.textContent = unreadCount;
+            notificationCount.style.display = unreadCount > 0 ? 'flex' : 'none';
         }
+
+        // Mark all notifications as read
+        markAsReadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifications.forEach(notification => {
+                notification.unread = false;
+            });
+            updateNotificationUI();
+            updateNotificationCount();
+        });
 
         function updateNotificationUI() {
             if (notifications.length === 0) {
@@ -3577,7 +3651,7 @@
             }
 
             notificationList.innerHTML = notifications.map(notification => `
-                <div class="notification-item" onclick="handleNotificationClick(${notification.id})">
+                <div class="notification-item ${notification.unread ? 'unread' : ''}" onclick="handleNotificationClick(${notification.id})">
                     <img src="${notification.image || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}" 
                          alt="Notification">
                     <div class="notification-content">

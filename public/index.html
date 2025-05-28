@@ -2105,33 +2105,54 @@
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-
+            const submitButton = loginForm.querySelector('button[type="submit"]');
+            
             try {
+                // Disable the submit button
+                submitButton.disabled = true;
+                submitButton.textContent = 'Logging in...';
+                
                 const response = await fetch(`${API_URL}/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    credentials: 'include',
                     body: JSON.stringify({ email, password })
                 });
 
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error);
+                    throw new Error(data.error || 'Login failed');
                 }
 
                 // Store token and user data
                 localStorage.setItem('token', data.token);
                 currentUser = data.user;
+                
+                // Initialize WebSocket after successful login
+                initializeWebSocket();
+                
+                // Update UI
                 updateUIForUser();
                 authModal.style.display = 'none';
                 loginForm.reset();
+                
+                // Show success message
+                showNotificationToast({
+                    title: 'Welcome back!',
+                    message: `Successfully logged in as ${currentUser.name}`,
+                    type: 'success'
+                });
             } catch (error) {
-                loginError.textContent = error.message;
+                console.error('Login error:', error);
+                loginError.textContent = error.message || 'Failed to login. Please try again.';
                 loginError.style.display = 'block';
+            } finally {
+                // Re-enable the submit button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Login';
             }
         });
 
@@ -3381,7 +3402,10 @@
         let activeChats = new Set(); // Store active chat IDs
 
         function initializeWebSocket() {
-            if (!currentUser) return;
+            if (!currentUser || !localStorage.getItem('token')) {
+                console.log('No user or token, skipping socket initialization');
+                return;
+            }
 
             // Close existing socket if any
             if (socket) {
@@ -3399,7 +3423,10 @@
                     reconnection: true,
                     reconnectionAttempts: 5,
                     reconnectionDelay: 1000,
-                    transports: ['websocket', 'polling']
+                    transports: ['websocket', 'polling'],
+                    auth: {
+                        token: localStorage.getItem('token')
+                    }
                 });
 
                 socket.on('connect', () => {

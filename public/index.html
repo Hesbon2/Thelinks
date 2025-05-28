@@ -2161,107 +2161,14 @@
         .message.sent .reply-send-btn:hover {
             background: rgba(255, 255, 255, 0.2);
         }
-
-        /* Header Styles */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #666;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-btn:hover {
-            color: var(--primary-color);
-            background: rgba(255, 90, 95, 0.1);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        /* Update existing user-menu styles */
-        .user-menu {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .notification-icon {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .dropdown {
-            position: fixed;
-            top: 70px;
-            left: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 8px 0;
-            min-width: 200px;
-            display: none;
-            z-index: 1000;
-        }
-
-        .dropdown a {
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #2d3748;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown a:hover {
-            background-color: #f7fafc;
-        }
-
-        #userProfile {
-            position: relative;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-left">
-                <button class="menu-btn" id="menuButton">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1>Property Connect</h1>
-            </div>
-            <div class="header-right">
+        <!-- User Menu -->
+        <div class="user-menu" id="userMenu">
+            <button class="auth-button" id="authButton">Login / Register</button>
+            <div id="userProfile" style="display: none;">
                 <div class="notification-icon" id="notificationIcon" style="display: none;">
                     <i class="fas fa-bell"></i>
                     <span class="notification-count" id="notificationCount">0</span>
@@ -2279,20 +2186,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="user-menu" id="userMenu">
-                    <button class="auth-button" id="authButton">Login / Register</button>
-                    <div id="userProfile" style="display: none;">
-                        <img src="" alt="Profile" id="userProfilePic">
-                        <div class="dropdown">
-                            <a href="#" id="profileLink">Profile</a>
-                            <a href="#" id="myPostsLink">My Posts</a>
-                            <a href="#" id="bookmarksLink">Bookmarks</a>
-                            <a href="#" id="logoutLink">Logout</a>
-                        </div>
-                    </div>
+                <img src="" alt="Profile" id="userProfilePic">
+                <div class="dropdown">
+                    <a href="#" id="profileLink">Profile</a>
+                    <a href="#" id="myPostsLink">My Posts</a>
+                    <a href="#" id="bookmarksLink">Bookmarks</a>
+                    <a href="#" id="logoutLink">Logout</a>
                 </div>
             </div>
         </div>
+
+        <h1>Property Connect</h1>
 
         <!-- Authentication Required Message -->
         <div id="authRequiredMessage" class="auth-required-message">
@@ -4782,7 +4686,7 @@
             if (unreadMessages.has(itemId)) {
                 unreadMessages.delete(itemId);
                 updateUnreadIndicators();
-                }
+            }
 
                 // Mark messages as read
                 fetch(`${API_URL}/messages/${itemId}/read`, {
@@ -4952,26 +4856,6 @@
             }
             return outputArray;
         }
-
-        // Menu button functionality
-        const menuButton = document.getElementById('menuButton');
-        const menuUserProfile = document.getElementById('userProfile');
-        
-        menuButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (menuUserProfile.style.display === 'none') {
-                menuUserProfile.style.display = 'flex';
-            } else {
-                menuUserProfile.style.display = 'none';
-            }
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!menuUserProfile.contains(e.target) && !menuButton.contains(e.target)) {
-                menuUserProfile.style.display = 'none';
-            }
-        });
         }); // This closes the DOMContentLoaded event listener
     </script>
 </body>

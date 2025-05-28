@@ -3462,13 +3462,17 @@
                 console.log('Initializing WebSocket connection...', { baseURL });
                 socket = io(baseURL, {
                     path: '/socket.io',
-                    autoConnect: true,
+                    autoConnect: false, // Changed to false to handle connection manually
                     reconnection: true,
                     reconnectionAttempts: 5,
                     reconnectionDelay: 1000,
                     transports: ['polling', 'websocket'],
                     auth: {
                         token: localStorage.getItem('token')
+                    },
+                    withCredentials: true, // Added to handle CORS
+                    extraHeaders: { // Added explicit headers
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
 
@@ -3478,6 +3482,28 @@
 
                 socket.on('connect_error', (error) => {
                     console.error('Socket connection error:', error);
+                    // Implement exponential backoff
+                    const retryDelay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000);
+                    reconnectAttempts++;
+                    
+                    if (reconnectAttempts >= 5) {
+                        console.error('Max reconnection attempts reached');
+                        socket.disconnect();
+                        showNotificationToast({
+                            title: 'Connection Failed',
+                            message: 'Unable to establish real-time connection. Please try logging in again.',
+                            type: 'error',
+                            duration: 10000
+                        });
+                        return;
+                    }
+
+                    console.log(`Retrying connection in ${retryDelay}ms...`);
+                    setTimeout(() => {
+                        if (!socket.connected) {
+                            socket.connect();
+                        }
+                    }, retryDelay);
                 });
 
                 socket.on('error', (error) => {
@@ -3489,15 +3515,13 @@
                 });
 
                 socket.on('connect', () => {
-                    console.log('Socket.IO connected');
-                // Send authentication
-                    socket.emit('authenticate', localStorage.getItem('token'));
-
-                showNotificationToast({
-                    title: 'Connected',
-                    message: 'Real-time notifications are now active',
-                    type: 'success'
-                });
+                    console.log('Socket.IO connected successfully');
+                    reconnectAttempts = 0; // Reset reconnection attempts
+                    showNotificationToast({
+                        title: 'Connected',
+                        message: 'Real-time notifications are now active',
+                        type: 'success'
+                    });
                 });
 
                 socket.on('authenticated', (response) => {
